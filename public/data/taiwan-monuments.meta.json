@@ -1,0 +1,18 @@
+{
+  "title": "臺灣法定古蹟位置",
+  "source": "文化部文化資產局開放資料",
+  "sourceUrl": "https://data.gov.tw/dataset/6246",
+  "endpoint": "https://data.boch.gov.tw/opendata/v2/assetsCase/1.1.json",
+  "fetchedAt": "2026-08-10T17:10:58.552Z",
+  "license": "政府資料開放授權條款第1版",
+  "rawRecordCount": 1063,
+  "featureCount": 1057,
+  "omittedRecordCount": 6,
+  "sha256": "96c57b5483f8b7bd6de64cb7790a7a7e5a912a92062d969a369f012c843f2d20",
+  "limitations": [
+    "This dataset covers registered monuments (古蹟), not every class of cultural heritage.",
+    "Coordinates are provider-supplied representative points, not legal site boundaries.",
+    "Road proximity is measured to the representative point and does not establish historical causality.",
+    "The source has an irregular update frequency; use fetchedAt to identify this snapshot."
+  ]
+}

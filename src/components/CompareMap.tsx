@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import Map, { Layer, NavigationControl, ScaleControl, Source, type MapLayerMouseEvent, type MapRef, type ViewStateChangeEvent } from 'react-map-gl/maplibre'
-import type { FilterSpecification, LineLayerSpecification } from 'maplibre-gl'
-import { Columns2, MousePointer2 } from 'lucide-react'
-import type { CityPack, HistoricalLayer, RoadFeatureCollection, RoadSummary } from '../types'
+import type { CircleLayerSpecification, FilterSpecification, LineLayerSpecification } from 'maplibre-gl'
+import { Columns2, Landmark, MousePointer2 } from 'lucide-react'
+import type { CityPack, CulturalAssetCollection, CulturalAssetFeature, HistoricalLayer, RoadFeatureCollection, RoadSummary } from '../types'
 
 interface CompareMapProps {
   city: CityPack
@@ -10,7 +10,12 @@ interface CompareMapProps {
   roads: RoadFeatureCollection | null
   roadNameCount: number
   selectedRoad: RoadSummary | null
+  culturalAssets: CulturalAssetCollection | null
+  cultureVisible: boolean
+  selectedCulturalAsset: CulturalAssetFeature | null
   onRoadSelect: (name: string) => void
+  onToggleCulture: () => void
+  onCulturalAssetSelect: (caseId: string) => void
 }
 
 const baseMapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
@@ -32,6 +37,29 @@ const hitLayer: LineLayerSpecification = {
   paint: {
     'line-color': 'rgba(0,0,0,0.01)',
     'line-width': 18,
+  },
+}
+
+const culturalAssetLayer: CircleLayerSpecification = {
+  id: 'cultural-assets-visible',
+  type: 'circle',
+  source: 'cultural-assets',
+  paint: {
+    'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 3, 16, 5, 19, 7],
+    'circle-color': '#a86f13',
+    'circle-stroke-color': '#fff9e8',
+    'circle-stroke-width': 1.5,
+    'circle-opacity': 0.9,
+  },
+}
+
+const culturalAssetHitLayer: CircleLayerSpecification = {
+  id: 'cultural-assets-hit',
+  type: 'circle',
+  source: 'cultural-assets',
+  paint: {
+    'circle-radius': 13,
+    'circle-color': 'rgba(0,0,0,0.01)',
   },
 }
 
@@ -66,9 +94,34 @@ function RoadSources({ roads, interactive = false, hoveredName = null }: { roads
   )
 }
 
-export function CompareMap({ city, historicalLayer, roads, roadNameCount, selectedRoad, onRoadSelect }: CompareMapProps) {
+function CulturalAssetLayers({
+  assets,
+  interactive = false,
+  hoveredId = null,
+  selectedId = null,
+}: {
+  assets: CulturalAssetCollection
+  interactive?: boolean
+  hoveredId?: string | null
+  selectedId?: string | null
+}) {
+  const hoverFilter: FilterSpecification = ['==', ['get', 'case_id'], hoveredId ?? '__no_hovered_asset__']
+  const selectedFilter: FilterSpecification = ['==', ['get', 'case_id'], selectedId ?? '__no_selected_asset__']
+
+  return (
+    <Source id="cultural-assets" type="geojson" data={assets} promoteId="case_id">
+      <Layer {...culturalAssetLayer} />
+      {interactive && <Layer {...culturalAssetHitLayer} />}
+      {interactive && <Layer id="hovered-cultural-asset" type="circle" filter={hoverFilter} paint={{ 'circle-radius': 9, 'circle-color': '#f5c45d', 'circle-stroke-color': '#3e2e10', 'circle-stroke-width': 2 }} />}
+      <Layer id="selected-cultural-asset" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 11, 'circle-color': '#ff5a37', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 3 }} />
+    </Source>
+  )
+}
+
+export function CompareMap({ city, historicalLayer, roads, roadNameCount, selectedRoad, culturalAssets, cultureVisible, selectedCulturalAsset, onRoadSelect, onToggleCulture, onCulturalAssetSelect }: CompareMapProps) {
   const [split, setSplit] = useState(52)
   const [hoveredRoad, setHoveredRoad] = useState<{ name: string; x: number; y: number } | null>(null)
+  const [hoveredCulturalAsset, setHoveredCulturalAsset] = useState<{ caseId: string; name: string; classification: string; x: number; y: number } | null>(null)
   const compareStageRef = useRef<HTMLElement>(null)
   const currentMapRef = useRef<MapRef>(null)
   const historicalMapRef = useRef<MapRef>(null)
@@ -100,18 +153,61 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     })
   }, [selectedRoad])
 
+  const bringSelectedRoadToFront = useCallback(() => {
+    for (const mapRef of [currentMapRef, historicalMapRef]) {
+      const map = mapRef.current?.getMap()
+      if (!map) continue
+      if (map.getLayer('selected-road-corridor')) map.moveLayer('selected-road-corridor')
+      if (map.getLayer('selected-road')) map.moveLayer('selected-road')
+    }
+  }, [])
+
   useEffect(() => {
     focusSelectedRoad()
   }, [focusSelectedRoad])
 
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(bringSelectedRoadToFront)
+    return () => window.cancelAnimationFrame(frame)
+  }, [bringSelectedRoadToFront, culturalAssets, cultureVisible, historicalLayer.id, selectedRoadData])
+
+  useEffect(() => {
+    if (!selectedCulturalAsset || !currentMapRef.current) return
+    const [longitude, latitude] = selectedCulturalAsset.geometry.coordinates
+    currentMapRef.current.easeTo({ center: [longitude, latitude], duration: 650 })
+  }, [selectedCulturalAsset])
+
   const handleClick = (event: MapLayerMouseEvent) => {
-    const name = event.features?.[0]?.properties?.name
+    const culturalFeature = event.features?.find((feature) => feature.layer.id === 'cultural-assets-hit')
+    const caseId = culturalFeature?.properties?.case_id
+    if (typeof caseId === 'string') {
+      onCulturalAssetSelect(caseId)
+      return
+    }
+    const roadFeature = event.features?.find((feature) => feature.layer.id === 'osm-roads-hit')
+    const name = roadFeature?.properties?.name
     if (typeof name === 'string') onRoadSelect(name)
   }
 
   const handleMouseMove = (event: MapLayerMouseEvent) => {
     if (mapIsDraggingRef.current) return
-    const name = event.features?.[0]?.properties?.name
+    const culturalFeature = event.features?.find((feature) => feature.layer.id === 'cultural-assets-hit')
+    const caseId = culturalFeature?.properties?.case_id
+    const assetName = culturalFeature?.properties?.name
+    if (typeof caseId === 'string' && typeof assetName === 'string') {
+      setHoveredRoad(null)
+      setHoveredCulturalAsset({
+        caseId,
+        name: assetName,
+        classification: typeof culturalFeature?.properties?.classification === 'string' ? culturalFeature.properties.classification : '古蹟',
+        x: event.point.x,
+        y: event.point.y,
+      })
+      return
+    }
+    setHoveredCulturalAsset(null)
+    const roadFeature = event.features?.find((feature) => feature.layer.id === 'osm-roads-hit')
+    const name = roadFeature?.properties?.name
     setHoveredRoad((current) => {
       if (typeof name !== 'string') return null
       if (current?.name === name && Math.abs(current.x - event.point.x) < 8 && Math.abs(current.y - event.point.y) < 8) return current
@@ -122,6 +218,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
   const handleDragStart = () => {
     mapIsDraggingRef.current = true
     setHoveredRoad(null)
+    setHoveredCulturalAsset(null)
   }
 
   const handleDragEnd = () => {
@@ -163,14 +260,17 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           ref={currentMapRef}
           initialViewState={initialViewState}
           onMove={synchronizeHistoricalMap}
-          onLoad={focusSelectedRoad}
+          onLoad={() => { focusSelectedRoad(); bringSelectedRoadToFront() }}
           onClick={handleClick}
           onMouseMove={handleMouseMove}
-          onMouseLeave={() => setHoveredRoad(null)}
+          onMouseLeave={() => { setHoveredRoad(null); setHoveredCulturalAsset(null) }}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
-          interactiveLayerIds={roads ? ['osm-roads-hit'] : []}
-          cursor={hoveredRoad ? 'pointer' : 'grab'}
+          interactiveLayerIds={[
+            ...(roads ? ['osm-roads-hit'] : []),
+            ...(cultureVisible && culturalAssets && selectedRoad ? ['cultural-assets-hit'] : []),
+          ]}
+          cursor={hoveredRoad || hoveredCulturalAsset ? 'pointer' : 'grab'}
           dragPan
           mapStyle={baseMapStyle}
           minZoom={12.5}
@@ -181,26 +281,36 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           <NavigationControl position="bottom-right" showCompass={false} />
           <ScaleControl position="bottom-left" unit="metric" />
           {roads && <RoadSources roads={roads} interactive hoveredName={hoveredRoad?.name} />}
+          {cultureVisible && culturalAssets && <CulturalAssetLayers assets={culturalAssets} interactive={Boolean(selectedRoad)} hoveredId={hoveredCulturalAsset?.caseId} selectedId={selectedCulturalAsset?.properties.case_id} />}
           <SelectedRoadLayers selectedRoadData={selectedRoadData} />
         </Map>
       </div>
 
       <div className="map-layer historical-map" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }} aria-hidden="true">
-        <Map ref={historicalMapRef} initialViewState={initialViewState} mapStyle={baseMapStyle} minZoom={12.5} maxZoom={19} attributionControl={false} interactive={false} reuseMaps>
+        <Map ref={historicalMapRef} initialViewState={initialViewState} onLoad={bringSelectedRoadToFront} mapStyle={baseMapStyle} minZoom={12.5} maxZoom={19} attributionControl={false} interactive={false} reuseMaps>
           <Source key={historicalLayer.id} id="historical-raster" type="raster" tiles={historicalTiles} tileSize={256} bounds={historicalLayer.bounds} attribution="中央研究院人社中心地理資訊科學研究專題中心">
             <Layer id="historical-raster-layer" type="raster" paint={{ 'raster-opacity': 0.88, 'raster-fade-duration': 0 }} />
           </Source>
           {roads && <RoadSources roads={roads} />}
+          {cultureVisible && culturalAssets && <CulturalAssetLayers assets={culturalAssets} selectedId={selectedCulturalAsset?.properties.case_id} />}
           <SelectedRoadLayers selectedRoadData={selectedRoadData} />
         </Map>
       </div>
 
       <div className="map-side-label history-label"><span>{historicalLayer.label}</span><strong>歷史圖資</strong></div>
       <div className="map-side-label now-label"><span>NOW</span><strong>現代道路</strong></div>
+      <button className={`context-layer-toggle${cultureVisible ? ' active' : ''}`} aria-pressed={cultureVisible} onClick={onToggleCulture}>
+        <Landmark size={15} /><span>法定古蹟</span><small>{cultureVisible ? 'ON' : 'OFF'}</small>
+      </button>
       {!selectedRoad && <div className="study-scope-chip">{city.studyArea} · {roadNameCount} 條道路</div>}
       {hoveredRoad && (
         <div className="road-hover-label" style={{ left: hoveredRoad.x + 12, top: hoveredRoad.y + 12 }}>
           <strong>{hoveredRoad.name}</strong><span>點擊選擇</span>
+        </div>
+      )}
+      {hoveredCulturalAsset && (
+        <div className="road-hover-label cultural" style={{ left: hoveredCulturalAsset.x + 12, top: hoveredCulturalAsset.y + 12 }}>
+          <strong>{hoveredCulturalAsset.name}</strong><span>{hoveredCulturalAsset.classification} · 點擊定位</span>
         </div>
       )}
       <div className="compare-divider" style={{ left: `${split}%` }}>

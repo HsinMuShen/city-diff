@@ -1,6 +1,6 @@
-import { AlertTriangle, ArrowLeft, ArrowUpRight, ChevronDown, GitBranch, Ruler, Search, Sigma, Signpost } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowUpRight, ChevronDown, GitBranch, Landmark, Ruler, Search, Sigma, Signpost } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import type { CityPack, HistoricalLayer, RoadMetadata, RoadSummary } from '../types'
+import type { CityPack, CulturalAssetMetadata, HistoricalLayer, NearbyCulturalAsset, RoadMetadata, RoadSummary } from '../types'
 import { roadClassLabel } from '../lib/geo'
 
 interface RoadInspectorProps {
@@ -9,9 +9,13 @@ interface RoadInspectorProps {
   allRoads: RoadSummary[]
   suggestedRoads: RoadSummary[]
   metadata: RoadMetadata | null
+  culturalMetadata: CulturalAssetMetadata | null
+  nearbyCulturalAssets: NearbyCulturalAsset[]
+  selectedCulturalAssetId: string | null
   activeLayer: HistoricalLayer
   onSelect: (name: string) => void
   onClear: () => void
+  onCulturalAssetSelect: (caseId: string) => void
 }
 
 function formatLength(meters: number) {
@@ -29,7 +33,7 @@ function formatOneway(value: boolean | null) {
   return '未標註'
 }
 
-export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, metadata, activeLayer, onSelect, onClear }: RoadInspectorProps) {
+export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, metadata, culturalMetadata, nearbyCulturalAssets, selectedCulturalAssetId, activeLayer, onSelect, onClear, onCulturalAssetSelect }: RoadInspectorProps) {
   const [query, setQuery] = useState('')
   const normalizedQuery = query.trim().toLowerCase()
   const visibleRoads = useMemo(() => {
@@ -100,6 +104,31 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
         <div className="compact-warning"><AlertTriangle size={14} /><span>橘色帶是視覺提示，不代表法定道路範圍或歷史因果。</span></div>
       </section>
 
+      <section className="cultural-context-card" aria-labelledby="cultural-context-title">
+        <header>
+          <div><Landmark size={16} /><h3 id="cultural-context-title">道路文化脈絡</h3></div>
+          <span>{nearbyCulturalAssets.length} 處 / 500m</span>
+        </header>
+        <p>由道路中心線量測至文化部登錄古蹟座標，協助辨識道路周邊的文化資產密度；不代表兩者有歷史因果。</p>
+        {nearbyCulturalAssets.length > 0 ? (
+          <div className="cultural-asset-list">
+            {nearbyCulturalAssets.slice(0, 5).map(({ asset, distanceMeters }) => (
+              <article key={asset.properties.case_id} className={selectedCulturalAssetId === asset.properties.case_id ? 'selected' : undefined}>
+                <button onClick={() => onCulturalAssetSelect(asset.properties.case_id)} aria-pressed={selectedCulturalAssetId === asset.properties.case_id}>
+                  <strong>{asset.properties.name}</strong>
+                  <span>{asset.properties.classification} · {formatLength(distanceMeters)}</span>
+                </button>
+                <a href={asset.properties.official_url} target="_blank" rel="noreferrer" aria-label={`開啟${asset.properties.name}官方資料`}><ArrowUpRight size={14} /></a>
+              </article>
+            ))}
+            {nearbyCulturalAssets.length > 5 && <p className="more-cultural-assets">另有 {nearbyCulturalAssets.length - 5} 處，可在地圖上查看。</p>}
+          </div>
+        ) : (
+          <div className="cultural-empty">此道路中心線 500 公尺內沒有本資料集的登錄古蹟。</div>
+        )}
+        <footer>官方資料擷取：{formatDate(culturalMetadata?.fetchedAt)}</footer>
+      </section>
+
       <details className="provenance-disclosure">
         <summary><span>資料與限制</span><ChevronDown size={16} /></summary>
         <div className="provenance-content">
@@ -107,10 +136,12 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
           <dl>
             <div><dt>道路資料時間</dt><dd>{formatDate(metadata?.osmDataTimestamp)}</dd></div>
             <div><dt>城市快照</dt><dd>{metadata?.featureCount ?? '—'} 個 way</dd></div>
+            <div><dt>全臺古蹟快照</dt><dd>{culturalMetadata?.featureCount ?? '—'} 筆</dd></div>
             <div><dt>授權</dt><dd>{metadata?.license ?? 'ODbL'}</dd></div>
           </dl>
           <p className="provenance-limit">目前無法由這些資料得知道路開闢年份、所有權、法律界址或殘餘地塊成因。</p>
           <a href={metadata?.sourceUrl ?? 'https://www.openstreetmap.org/copyright'} target="_blank" rel="noreferrer">檢查 OSM 資料來源 <ArrowUpRight size={13} /></a>
+          <a href={culturalMetadata?.sourceUrl ?? 'https://data.gov.tw/dataset/6246'} target="_blank" rel="noreferrer">檢查文化資產資料來源 <ArrowUpRight size={13} /></a>
         </div>
       </details>
     </aside>

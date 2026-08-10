@@ -1,4 +1,4 @@
-import type { Feature, FeatureCollection, LineString } from 'geojson'
+import type { Feature, FeatureCollection, LineString, Point } from 'geojson'
 
 export interface HistoricalLayer {
   id: string
@@ -68,4 +68,40 @@ export interface RoadSummary {
   lanes: string[]
   oneway: boolean | null
   bounds: [number, number, number, number]
+}
+
+export interface CulturalAssetProperties {
+  case_id: string
+  name: string
+  classification: string
+  asset_types: string[]
+  city: string
+  district: string
+  address: string
+  authority: string
+  official_url: string
+  image_url: string | null
+  source: '文化部文化資產局'
+}
+
+export type CulturalAssetFeature = Feature<Point, CulturalAssetProperties>
+export type CulturalAssetCollection = FeatureCollection<Point, CulturalAssetProperties>
+
+export interface CulturalAssetMetadata {
+  title: string
+  source: string
+  sourceUrl: string
+  endpoint: string
+  fetchedAt: string
+  license: string
+  rawRecordCount: number
+  featureCount: number
+  omittedRecordCount: number
+  sha256: string
+  limitations: string[]
+}
+
+export interface NearbyCulturalAsset {
+  asset: CulturalAssetFeature
+  distanceMeters: number
 }

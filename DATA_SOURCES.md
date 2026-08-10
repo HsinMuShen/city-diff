@@ -38,12 +38,23 @@ Study bboxes are deliberately limited to historic cores:
 
 Each generated metadata file records the city, study area, extraction timestamp, OSM base timestamp, filter, feature count and SHA-256. OSM ways are contributor-maintained centreline segments. They are not road ownership polygons, legal rights-of-way, or evidence of construction dates.
 
-## 3. Base map
+## 3. Registered monuments
+
+- Provider: 文化部文化資產局
+- Government dataset: <https://data.gov.tw/dataset/6246>
+- Official JSON endpoint: <https://data.boch.gov.tw/opendata/v2/assetsCase/1.1.json>
+- License: 政府資料開放授權條款第1版
+
+`npm run data:culture` downloads the official nationwide dataset and produces a normalized GeoJSON snapshot plus a provenance record. The metadata records the endpoint, extraction time, raw and retained record counts, omitted records and SHA-256. Records without valid Taiwan coordinates are omitted rather than guessed.
+
+This endpoint contains registered monuments (`古蹟`), not every cultural-heritage category. Coordinates are provider-supplied representative points rather than legal site polygons. City Diff derives the shortest planar distance from each selected OSM road centreline to each monument point and lists results within 500 metres. Proximity is a discovery aid: it does not establish that the road and monument are historically related, that a road project affected the site, or that a 500-metre threshold has legal significance.
+
+## 4. Base map
 
 - CARTO Positron tiles
 - OpenStreetMap attribution remains visible in the interface.
 
-## 4. Odd-lot analysis boundary
+## 5. Odd-lot analysis boundary
 
 The 2016 Tainan cadastral layer currently used by City Diff is a raster tile service. It is useful as visual evidence, but it does not expose parcel vertices, parcel IDs, ownership, zoning or legal status for computation.
 

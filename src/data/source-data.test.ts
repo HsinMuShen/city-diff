@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { cityPacks } from './cityPacks'
-import type { RoadFeatureCollection, RoadMetadata } from '../types'
+import type { CulturalAssetCollection, CulturalAssetMetadata, RoadFeatureCollection, RoadMetadata } from '../types'
 
 describe('source data integrity', () => {
   for (const city of cityPacks) {
@@ -42,5 +42,21 @@ describe('source data integrity', () => {
         expect(studyNorth).toBeLessThanOrEqual(north)
       }
     }
+  })
+
+  it('keeps the official monument snapshot and provenance record in sync', () => {
+    const assetUrl = new URL('../../public/data/taiwan-monuments.geojson', import.meta.url)
+    const metadataUrl = new URL('../../public/data/taiwan-monuments.meta.json', import.meta.url)
+    const assetText = readFileSync(assetUrl, 'utf8')
+    const assets = JSON.parse(assetText) as CulturalAssetCollection
+    const metadata = JSON.parse(readFileSync(metadataUrl, 'utf8')) as CulturalAssetMetadata
+
+    expect(assets.features.length).toBe(metadata.featureCount)
+    expect(createHash('sha256').update(assetText).digest('hex')).toBe(metadata.sha256)
+    expect(metadata.rawRecordCount).toBe(metadata.featureCount + metadata.omittedRecordCount)
+    expect(assets.features.length).toBeGreaterThan(900)
+    expect(assets.features.every((feature) => feature.geometry.type === 'Point')).toBe(true)
+    expect(assets.features.every((feature) => feature.properties.case_id.length > 0)).toBe(true)
+    expect(assets.features.every((feature) => feature.properties.source === '文化部文化資產局')).toBe(true)
   })
 })
