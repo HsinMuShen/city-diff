@@ -1,0 +1,40 @@
+{
+  "cityId": "kaohsiung",
+  "studyArea": "鹽埕—哈瑪星歷史核心",
+  "title": "高雄鹽埕—哈瑪星歷史核心具名道路中心線",
+  "source": "OpenStreetMap contributors via Overpass API",
+  "sourceUrl": "https://www.openstreetmap.org/copyright",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "fetchedAt": "2026-08-09T16:04:38.660Z",
+  "osmDataTimestamp": "2026-08-09T16:03:19Z",
+  "license": "Open Database License (ODbL)",
+  "bbox": [
+    22.614,
+    120.269,
+    22.638,
+    120.306
+  ],
+  "filters": {
+    "requiredTags": [
+      "highway",
+      "name"
+    ],
+    "acceptedHighwayClasses": [
+      "primary",
+      "secondary",
+      "tertiary",
+      "residential",
+      "unclassified",
+      "living_street",
+      "pedestrian"
+    ]
+  },
+  "featureCount": 700,
+  "sha256": "997a12f81e3882154690cd965edfe2f9eafbd8e786847b8c49e4c7cb1ab82ff2",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Ways are road centreline segments, not legal road boundaries.",
+    "This snapshot does not establish road opening dates or historical causality.",
+    "The snapshot covers the named study area, not the entire modern municipality."
+  ]
+}
