@@ -1,0 +1,47 @@
+{
+  "cityId": "kaohsiung",
+  "studyArea": "鹽埕—哈瑪星歷史核心",
+  "title": "鹽埕—哈瑪星歷史核心 OSM 步行路網分析快照",
+  "source": "OpenStreetMap contributors via Overpass API",
+  "sourceUrl": "https://www.openstreetmap.org/copyright",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "fetchedAt": "2026-08-10T17:58:25.928Z",
+  "osmDataTimestamp": "2026-08-10T17:56:51Z",
+  "license": "Open Database License (ODbL)",
+  "bbox": [
+    22.614,
+    120.269,
+    22.638,
+    120.306
+  ],
+  "filters": {
+    "requiredTags": [
+      "highway"
+    ],
+    "excludedAccess": [
+      "private"
+    ],
+    "acceptedHighwayClasses": [
+      "primary",
+      "secondary",
+      "tertiary",
+      "residential",
+      "unclassified",
+      "living_street",
+      "pedestrian",
+      "service",
+      "footway",
+      "path",
+      "steps",
+      "track"
+    ]
+  },
+  "featureCount": 2950,
+  "sha256": "94fcdd2055d98465a2b0ae89429a26525f6245a70310dcd53b761983053377e0",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and pedestrian access tags may be incomplete.",
+    "Unnamed ways receive a generated display label containing their OSM way ID; the label is not a street name.",
+    "Ways are centreline segments, not legal rights-of-way or evidence of public access.",
+    "Grade, gates, construction conditions and parcel ownership require additional verification."
+  ]
+}

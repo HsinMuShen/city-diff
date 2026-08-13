@@ -38,6 +38,20 @@ Study bboxes are deliberately limited to historic cores:
 
 Each generated metadata file records the city, study area, extraction timestamp, OSM base timestamp, filter, feature count and SHA-256. OSM ways are contributor-maintained centreline segments. They are not road ownership polygons, legal rights-of-way, or evidence of construction dates.
 
+### Analytical walk-network snapshots
+
+`npm run data:network` generates a second OSM snapshot for each City Pack. Unlike the road-search snapshot, it includes named and unnamed ways in the following classes: `primary`, `secondary`, `tertiary`, `residential`, `unclassified`, `living_street`, `pedestrian`, `service`, `footway`, `path`, `steps`, and `track`. Ways explicitly tagged `access=private` are excluded. Unnamed features receive a generated interface label containing the OSM way ID; this is not presented as an official street name.
+
+The **消失巷弄偵測** prototype marks a morphology candidate when an OSM network endpoint:
+
+- has one graph connection in the snapped network;
+- lies 3–55 metres from the selected road centreline; and
+- approaches the selected road with cosine alignment greater than 0.35.
+
+The **城市縫合點** prototype pairs candidate endpoints on opposing sides of the selected road when their projected positions along the selected road are close, their direct gap is 8–130 metres, and the current derived network is disconnected or produces a substantial detour. Shortest paths are calculated on an undirected graph with coordinates snapped to an 8-metre grid.
+
+These are exploratory morphology and connectivity candidates. They do not prove that an alley historically existed, disappeared, is publicly accessible, or can be reconnected. The graph does not currently model gates, elevation, opening hours, sidewalk quality, every access restriction, or legal rights-of-way. Historical raster inspection remains a separate human verification step.
+
 ## 3. Registered monuments
 
 - Provider: 文化部文化資產局

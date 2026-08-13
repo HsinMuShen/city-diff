@@ -8,6 +8,7 @@
     "build": "tsc --noEmit -p tsconfig.app.json && vite build",
     "data:culture": "node scripts/fetch-cultural-assets.mjs",
     "data:roads": "node scripts/fetch-osm-roads.mjs",
+    "data:network": "node scripts/fetch-osm-walk-network.mjs",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"

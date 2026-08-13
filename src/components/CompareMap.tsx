@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import Map, { Layer, NavigationControl, ScaleControl, Source, type MapLayerMouseEvent, type MapRef, type ViewStateChangeEvent } from 'react-map-gl/maplibre'
 import type { CircleLayerSpecification, FilterSpecification, LineLayerSpecification } from 'maplibre-gl'
-import { Columns2, Landmark, MousePointer2 } from 'lucide-react'
-import type { CityPack, CulturalAssetCollection, CulturalAssetFeature, HistoricalLayer, RoadFeatureCollection, RoadSummary } from '../types'
+import { Columns2, Film, Landmark, MousePointer2, ScanSearch, Unplug } from 'lucide-react'
+import type { CityPack, CulturalAssetCollection, CulturalAssetFeature, HistoricalLayer, LostAlleyCollection, RoadFeatureCollection, RoadSummary, StitchPointCollection, UrbanTraceTool } from '../types'
+import { ChangeFilm } from './ChangeFilm'
 
 interface CompareMapProps {
   city: CityPack
@@ -13,9 +14,18 @@ interface CompareMapProps {
   culturalAssets: CulturalAssetCollection | null
   cultureVisible: boolean
   selectedCulturalAsset: CulturalAssetFeature | null
+  activeTool: UrbanTraceTool
+  lostAlleyCandidates: LostAlleyCollection
+  stitchPointCandidates: StitchPointCollection
+  selectedTraceCandidateId: string | null
+  filmLocation: [number, number] | null
   onRoadSelect: (name: string) => void
   onToggleCulture: () => void
   onCulturalAssetSelect: (caseId: string) => void
+  onToolChange: (tool: UrbanTraceTool) => void
+  onTraceCandidateSelect: (candidateId: string) => void
+  onFilmLocationSelect: (location: [number, number]) => void
+  onHistoricalLayerSelect: (layer: HistoricalLayer) => void
 }
 
 const baseMapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
@@ -118,10 +128,65 @@ function CulturalAssetLayers({
   )
 }
 
-export function CompareMap({ city, historicalLayer, roads, roadNameCount, selectedRoad, culturalAssets, cultureVisible, selectedCulturalAsset, onRoadSelect, onToggleCulture, onCulturalAssetSelect }: CompareMapProps) {
+function UrbanTraceLayers({
+  activeTool,
+  lostAlleys,
+  stitchPoints,
+  interactive = false,
+  hoveredId = null,
+  selectedId = null,
+}: {
+  activeTool: UrbanTraceTool
+  lostAlleys: LostAlleyCollection
+  stitchPoints: StitchPointCollection
+  interactive?: boolean
+  hoveredId?: string | null
+  selectedId?: string | null
+}) {
+  const hoveredFilter: FilterSpecification = ['==', ['get', 'id'], hoveredId ?? '__no_hovered_trace__']
+  const selectedFilter: FilterSpecification = ['==', ['get', 'id'], selectedId ?? '__no_selected_trace__']
+
+  if (activeTool === 'lost-alleys') {
+    return (
+      <Source id="lost-alley-candidates" type="geojson" data={lostAlleys} promoteId="id">
+        <Layer id="lost-alley-points" type="circle" paint={{ 'circle-radius': 6, 'circle-color': '#167b89', 'circle-stroke-color': '#e9ffff', 'circle-stroke-width': 2 }} />
+        {interactive && <Layer id="lost-alley-hit" type="circle" paint={{ 'circle-radius': 15, 'circle-color': 'rgba(0,0,0,.01)' }} />}
+        {interactive && <Layer id="hovered-lost-alley" type="circle" filter={hoveredFilter} paint={{ 'circle-radius': 10, 'circle-color': '#55d2df', 'circle-stroke-color': '#153f45', 'circle-stroke-width': 2 }} />}
+        <Layer id="selected-lost-alley" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 11, 'circle-color': '#ff5430', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 }} />
+      </Source>
+    )
+  }
+
+  if (activeTool === 'stitch-points') {
+    return (
+      <Source id="stitch-point-candidates" type="geojson" data={stitchPoints} promoteId="id">
+        <Layer id="stitch-point-lines" type="line" paint={{ 'line-color': '#7d4fba', 'line-width': 4, 'line-dasharray': [1.2, 1.2], 'line-opacity': 0.9 }} />
+        <Layer id="stitch-point-ends" type="circle" paint={{ 'circle-radius': 5, 'circle-color': '#7d4fba', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2 }} />
+        {interactive && <Layer id="stitch-point-hit" type="line" paint={{ 'line-color': 'rgba(0,0,0,.01)', 'line-width': 18 }} />}
+        {interactive && <Layer id="hovered-stitch-point" type="line" filter={hoveredFilter} paint={{ 'line-color': '#c69cff', 'line-width': 8 }} />}
+        <Layer id="selected-stitch-point" type="line" filter={selectedFilter} paint={{ 'line-color': '#ff5430', 'line-width': 7 }} />
+      </Source>
+    )
+  }
+
+  return null
+}
+
+function FilmLocationLayers({ location }: { location: [number, number] | null }) {
+  if (!location) return null
+  return (
+    <Source id="selected-film-location" type="geojson" data={{ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: location } }}>
+      <Layer id="selected-film-location-halo" type="circle" paint={{ 'circle-radius': 13, 'circle-color': 'rgba(255,84,48,.18)', 'circle-stroke-color': '#ff5430', 'circle-stroke-width': 2 }} />
+      <Layer id="selected-film-location-dot" type="circle" paint={{ 'circle-radius': 3, 'circle-color': '#ff5430' }} />
+    </Source>
+  )
+}
+
+export function CompareMap({ city, historicalLayer, roads, roadNameCount, selectedRoad, culturalAssets, cultureVisible, selectedCulturalAsset, activeTool, lostAlleyCandidates, stitchPointCandidates, selectedTraceCandidateId, filmLocation, onRoadSelect, onToggleCulture, onCulturalAssetSelect, onToolChange, onTraceCandidateSelect, onFilmLocationSelect, onHistoricalLayerSelect }: CompareMapProps) {
   const [split, setSplit] = useState(52)
   const [hoveredRoad, setHoveredRoad] = useState<{ name: string; x: number; y: number } | null>(null)
   const [hoveredCulturalAsset, setHoveredCulturalAsset] = useState<{ caseId: string; name: string; classification: string; x: number; y: number } | null>(null)
+  const [hoveredTrace, setHoveredTrace] = useState<{ id: string; label: string; detail: string; x: number; y: number } | null>(null)
   const compareStageRef = useRef<HTMLElement>(null)
   const currentMapRef = useRef<MapRef>(null)
   const historicalMapRef = useRef<MapRef>(null)
@@ -142,6 +207,15 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       features: roads.features.filter((feature) => feature.properties.name === selectedName),
     }
   }, [roads, selectedName])
+  const selectedTraceCenter = useMemo<[number, number] | null>(() => {
+    if (!selectedTraceCandidateId) return null
+    const lostAlley = lostAlleyCandidates.features.find((candidate) => candidate.properties.id === selectedTraceCandidateId)
+    if (lostAlley) return [lostAlley.geometry.coordinates[0], lostAlley.geometry.coordinates[1]]
+    const stitch = stitchPointCandidates.features.find((candidate) => candidate.properties.id === selectedTraceCandidateId)
+    if (!stitch) return null
+    const [start, end] = stitch.geometry.coordinates
+    return [(start[0] + end[0]) / 2, (start[1] + end[1]) / 2]
+  }, [lostAlleyCandidates, selectedTraceCandidateId, stitchPointCandidates])
 
   const focusSelectedRoad = useCallback(() => {
     if (!selectedRoad || !currentMapRef.current) return
@@ -169,7 +243,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
   useEffect(() => {
     const frame = window.requestAnimationFrame(bringSelectedRoadToFront)
     return () => window.cancelAnimationFrame(frame)
-  }, [bringSelectedRoadToFront, culturalAssets, cultureVisible, historicalLayer.id, selectedRoadData])
+  }, [activeTool, bringSelectedRoadToFront, culturalAssets, cultureVisible, historicalLayer.id, lostAlleyCandidates, selectedRoadData, stitchPointCandidates])
 
   useEffect(() => {
     if (!selectedCulturalAsset || !currentMapRef.current) return
@@ -177,7 +251,22 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     currentMapRef.current.easeTo({ center: [longitude, latitude], duration: 650 })
   }, [selectedCulturalAsset])
 
+  useEffect(() => {
+    if (!selectedTraceCenter || !currentMapRef.current) return
+    currentMapRef.current.easeTo({ center: selectedTraceCenter, zoom: Math.max(currentMapRef.current.getZoom(), 17), duration: 650 })
+  }, [selectedTraceCenter])
+
   const handleClick = (event: MapLayerMouseEvent) => {
+    if (activeTool === 'change-film') {
+      onFilmLocationSelect([event.lngLat.lng, event.lngLat.lat])
+      return
+    }
+    const traceFeature = event.features?.find((feature) => feature.layer.id === 'lost-alley-hit' || feature.layer.id === 'stitch-point-hit')
+    const traceId = traceFeature?.properties?.id
+    if (traceFeature && typeof traceId === 'string') {
+      onTraceCandidateSelect(traceId)
+      return
+    }
     const culturalFeature = event.features?.find((feature) => feature.layer.id === 'cultural-assets-hit')
     const caseId = culturalFeature?.properties?.case_id
     if (typeof caseId === 'string') {
@@ -191,6 +280,22 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
 
   const handleMouseMove = (event: MapLayerMouseEvent) => {
     if (mapIsDraggingRef.current) return
+    const traceFeature = event.features?.find((feature) => feature.layer.id === 'lost-alley-hit' || feature.layer.id === 'stitch-point-hit')
+    const traceId = traceFeature?.properties?.id
+    if (traceFeature && typeof traceId === 'string') {
+      const isLostAlley = traceFeature.layer.id === 'lost-alley-hit'
+      const label = isLostAlley
+        ? String(traceFeature.properties?.road_name ?? '巷道端點')
+        : `${String(traceFeature.properties?.from_road ?? '端點')} ↔ ${String(traceFeature.properties?.to_road ?? '端點')}`
+      const detail = isLostAlley
+        ? `距選定道路約 ${String(traceFeature.properties?.distance_to_selected_m ?? '—')}m`
+        : `直線約 ${String(traceFeature.properties?.direct_distance_m ?? '—')}m`
+      setHoveredRoad(null)
+      setHoveredCulturalAsset(null)
+      setHoveredTrace({ id: traceId, label, detail, x: event.point.x, y: event.point.y })
+      return
+    }
+    setHoveredTrace(null)
     const culturalFeature = event.features?.find((feature) => feature.layer.id === 'cultural-assets-hit')
     const caseId = culturalFeature?.properties?.case_id
     const assetName = culturalFeature?.properties?.name
@@ -219,6 +324,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     mapIsDraggingRef.current = true
     setHoveredRoad(null)
     setHoveredCulturalAsset(null)
+    setHoveredTrace(null)
   }
 
   const handleDragEnd = () => {
@@ -263,14 +369,16 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           onLoad={() => { focusSelectedRoad(); bringSelectedRoadToFront() }}
           onClick={handleClick}
           onMouseMove={handleMouseMove}
-          onMouseLeave={() => { setHoveredRoad(null); setHoveredCulturalAsset(null) }}
+          onMouseLeave={() => { setHoveredRoad(null); setHoveredCulturalAsset(null); setHoveredTrace(null) }}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           interactiveLayerIds={[
             ...(roads ? ['osm-roads-hit'] : []),
-            ...(cultureVisible && culturalAssets && selectedRoad ? ['cultural-assets-hit'] : []),
+            ...(activeTool === 'explore' && cultureVisible && culturalAssets && selectedRoad ? ['cultural-assets-hit'] : []),
+            ...(activeTool === 'lost-alleys' && lostAlleyCandidates.features.length > 0 ? ['lost-alley-hit'] : []),
+            ...(activeTool === 'stitch-points' && stitchPointCandidates.features.length > 0 ? ['stitch-point-hit'] : []),
           ]}
-          cursor={hoveredRoad || hoveredCulturalAsset ? 'pointer' : 'grab'}
+          cursor={activeTool === 'change-film' ? 'crosshair' : hoveredRoad || hoveredCulturalAsset || hoveredTrace ? 'pointer' : 'grab'}
           dragPan
           mapStyle={baseMapStyle}
           minZoom={12.5}
@@ -282,6 +390,8 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           <ScaleControl position="bottom-left" unit="metric" />
           {roads && <RoadSources roads={roads} interactive hoveredName={hoveredRoad?.name} />}
           {cultureVisible && culturalAssets && <CulturalAssetLayers assets={culturalAssets} interactive={Boolean(selectedRoad)} hoveredId={hoveredCulturalAsset?.caseId} selectedId={selectedCulturalAsset?.properties.case_id} />}
+          <UrbanTraceLayers key={`current-traces-${activeTool}`} activeTool={activeTool} lostAlleys={lostAlleyCandidates} stitchPoints={stitchPointCandidates} interactive hoveredId={hoveredTrace?.id} selectedId={selectedTraceCandidateId} />
+          <FilmLocationLayers location={activeTool === 'change-film' ? filmLocation : null} />
           <SelectedRoadLayers selectedRoadData={selectedRoadData} />
         </Map>
       </div>
@@ -293,6 +403,8 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           </Source>
           {roads && <RoadSources roads={roads} />}
           {cultureVisible && culturalAssets && <CulturalAssetLayers assets={culturalAssets} selectedId={selectedCulturalAsset?.properties.case_id} />}
+          <UrbanTraceLayers key={`historical-traces-${activeTool}`} activeTool={activeTool} lostAlleys={lostAlleyCandidates} stitchPoints={stitchPointCandidates} selectedId={selectedTraceCandidateId} />
+          <FilmLocationLayers location={activeTool === 'change-film' ? filmLocation : null} />
           <SelectedRoadLayers selectedRoadData={selectedRoadData} />
         </Map>
       </div>
@@ -302,6 +414,17 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       <button className={`context-layer-toggle${cultureVisible ? ' active' : ''}`} aria-pressed={cultureVisible} onClick={onToggleCulture}>
         <Landmark size={15} /><span>法定古蹟</span><small>{cultureVisible ? 'ON' : 'OFF'}</small>
       </button>
+      <div className="urban-tool-dock" role="group" aria-label="城市痕跡工具">
+        <button className={activeTool === 'lost-alleys' ? 'active' : undefined} aria-pressed={activeTool === 'lost-alleys'} onClick={() => onToolChange(activeTool === 'lost-alleys' ? 'explore' : 'lost-alleys')} title="找出朝向選定道路卻提前中止的巷道候選">
+          <ScanSearch size={15} /><span>消失巷弄</span>
+        </button>
+        <button className={activeTool === 'change-film' ? 'active' : undefined} aria-pressed={activeTool === 'change-film'} onClick={() => onToolChange(activeTool === 'change-film' ? 'explore' : 'change-film')} title="點擊地圖並排查看同一位置的歷史版本">
+          <Film size={15} /><span>變化膠卷</span>
+        </button>
+        <button className={activeTool === 'stitch-points' ? 'active' : undefined} aria-pressed={activeTool === 'stitch-points'} onClick={() => onToolChange(activeTool === 'stitch-points' ? 'explore' : 'stitch-points')} title="找出道路兩側距離近、路網繞行明顯的候選連接">
+          <Unplug size={15} /><span>城市縫合點</span>
+        </button>
+      </div>
       {!selectedRoad && <div className="study-scope-chip">{city.studyArea} · {roadNameCount} 條道路</div>}
       {hoveredRoad && (
         <div className="road-hover-label" style={{ left: hoveredRoad.x + 12, top: hoveredRoad.y + 12 }}>
@@ -311,6 +434,11 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       {hoveredCulturalAsset && (
         <div className="road-hover-label cultural" style={{ left: hoveredCulturalAsset.x + 12, top: hoveredCulturalAsset.y + 12 }}>
           <strong>{hoveredCulturalAsset.name}</strong><span>{hoveredCulturalAsset.classification} · 點擊定位</span>
+        </div>
+      )}
+      {hoveredTrace && (
+        <div className="road-hover-label trace" style={{ left: hoveredTrace.x + 12, top: hoveredTrace.y + 12 }}>
+          <strong>{hoveredTrace.label}</strong><span>{hoveredTrace.detail} · 點擊查看</span>
         </div>
       )}
       <div className="compare-divider" style={{ left: `${split}%` }}>
@@ -328,8 +456,17 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           <Columns2 size={15} />
         </span>
       </div>
-      {!selectedRoad && (
+      {activeTool === 'explore' && !selectedRoad && (
         <div className="map-hint"><MousePointer2 size={16} /><span>點綠色道路，或從右側搜尋</span></div>
+      )}
+      {(activeTool === 'lost-alleys' || activeTool === 'stitch-points') && !selectedRoad && (
+        <div className="map-hint"><MousePointer2 size={16} /><span>先選擇一條道路，再產生候選點</span></div>
+      )}
+      {activeTool === 'change-film' && !filmLocation && (
+        <div className="map-hint film-hint"><Film size={16} /><span>點擊地圖任意位置，建立城市變化膠卷</span></div>
+      )}
+      {activeTool === 'change-film' && filmLocation && (
+        <ChangeFilm city={city} location={filmLocation} roads={roads} activeLayer={historicalLayer} onLayerSelect={onHistoricalLayerSelect} onClose={() => onToolChange('explore')} />
       )}
       <div className="map-attribution">
         <a href={historicalLayer.sourceUrl} target="_blank" rel="noreferrer">歷史圖資 © 中央研究院</a>

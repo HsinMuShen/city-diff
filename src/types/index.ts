@@ -26,6 +26,8 @@ export interface CityPack {
   studyBounds: [number, number, number, number]
   roadDataUrl: string
   roadMetadataUrl: string
+  walkNetworkDataUrl: string
+  walkNetworkMetadataUrl: string
   historicalLayers: readonly HistoricalLayer[]
 }
 
@@ -104,4 +106,42 @@ export interface CulturalAssetMetadata {
 export interface NearbyCulturalAsset {
   asset: CulturalAssetFeature
   distanceMeters: number
+}
+
+export type UrbanTraceTool = 'explore' | 'lost-alleys' | 'change-film' | 'stitch-points'
+
+export interface LostAlleyCandidateProperties {
+  id: string
+  selected_road: string
+  road_name: string
+  distance_to_selected_m: number
+  approach_score: number
+  evidence: string
+  status: 'morphology_candidate'
+  source: 'OpenStreetMap derived'
+}
+
+export type LostAlleyCandidate = Feature<Point, LostAlleyCandidateProperties>
+export type LostAlleyCollection = FeatureCollection<Point, LostAlleyCandidateProperties>
+
+export interface StitchPointProperties {
+  id: string
+  selected_road: string
+  from_road: string
+  to_road: string
+  direct_distance_m: number
+  network_distance_m: number | null
+  detour_ratio: number | null
+  evidence: string
+  status: 'connectivity_candidate'
+  source: 'OpenStreetMap derived'
+}
+
+export type StitchPointCandidate = Feature<LineString, StitchPointProperties>
+export type StitchPointCollection = FeatureCollection<LineString, StitchPointProperties>
+
+export interface UrbanTraceAnalysis {
+  lostAlleys: LostAlleyCollection
+  stitchPoints: StitchPointCollection
+  limitations: string[]
 }

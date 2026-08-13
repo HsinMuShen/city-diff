@@ -29,6 +29,8 @@ export const cityPacks: readonly CityPack[] = [
     studyBounds: [120.187, 22.982, 120.219, 23.008],
     roadDataUrl: '/data/tainan-roads.geojson',
     roadMetadataUrl: '/data/tainan-roads.meta.json',
+    walkNetworkDataUrl: '/data/tainan-walk-network.geojson',
+    walkNetworkMetadataUrl: '/data/tainan-walk-network.meta.json',
     historicalLayers: [
       layer('tainan', {
         id: 'cadastral-1953', label: '1953', period: '1953', title: '臺南舊地籍圖',
@@ -64,6 +66,8 @@ export const cityPacks: readonly CityPack[] = [
     studyBounds: [120.269, 22.614, 120.306, 22.638],
     roadDataUrl: '/data/kaohsiung-roads.geojson',
     roadMetadataUrl: '/data/kaohsiung-roads.meta.json',
+    walkNetworkDataUrl: '/data/kaohsiung-walk-network.geojson',
+    walkNetworkMetadataUrl: '/data/kaohsiung-walk-network.meta.json',
     historicalLayers: [
       layer('kaohsiung', {
         id: 'harbor-1926', label: '1926', period: '1926', title: '高雄築港平面圖',
@@ -99,6 +103,8 @@ export const cityPacks: readonly CityPack[] = [
     studyBounds: [120.668, 24.132, 120.697, 24.154],
     roadDataUrl: '/data/taichung-roads.geojson',
     roadMetadataUrl: '/data/taichung-roads.meta.json',
+    walkNetworkDataUrl: '/data/taichung-walk-network.geojson',
+    walkNetworkMetadataUrl: '/data/taichung-walk-network.meta.json',
     historicalLayers: [
       layer('taichung', {
         id: 'survey-1911', label: '1911', period: '1911', title: '臺中街實測圖',
@@ -134,6 +140,8 @@ export const cityPacks: readonly CityPack[] = [
     studyBounds: [121.493, 25.029, 121.529, 25.067],
     roadDataUrl: '/data/taipei-roads.geojson',
     roadMetadataUrl: '/data/taipei-roads.meta.json',
+    walkNetworkDataUrl: '/data/taipei-walk-network.geojson',
+    walkNetworkMetadataUrl: '/data/taipei-walk-network.meta.json',
     historicalLayers: [
       layer('taipei', {
         id: 'settlements-1895', label: '1895', period: '1895', title: '臺北及大稻埕・艋舺略圖',

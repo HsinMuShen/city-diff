@@ -22,6 +22,22 @@ describe('source data integrity', () => {
       expect(roads.features.every((feature) => feature.properties.name.length > 0)).toBe(true)
       expect(roads.features.every((feature) => feature.properties.source === 'OpenStreetMap')).toBe(true)
     })
+
+    it(`keeps the ${city.name} walk-network snapshot and provenance record in sync`, () => {
+      const networkUrl = new URL(`../../public/data/${city.id}-walk-network.geojson`, import.meta.url)
+      const networkMetadataUrl = new URL(`../../public/data/${city.id}-walk-network.meta.json`, import.meta.url)
+      const networkText = readFileSync(networkUrl, 'utf8')
+      const network = JSON.parse(networkText) as RoadFeatureCollection
+      const networkMetadata = JSON.parse(readFileSync(networkMetadataUrl, 'utf8')) as RoadMetadata
+
+      expect(networkMetadata.cityId).toBe(city.id)
+      expect(network.features.length).toBe(networkMetadata.featureCount)
+      expect(createHash('sha256').update(networkText).digest('hex')).toBe(networkMetadata.sha256)
+      expect(network.features.length).toBeGreaterThan(300)
+      expect(network.features.every((feature) => feature.geometry.type === 'LineString')).toBe(true)
+      expect(network.features.every((feature) => feature.properties.name.length > 0)).toBe(true)
+      expect(network.features.every((feature) => feature.properties.source === 'OpenStreetMap')).toBe(true)
+    })
   }
 
   it('preserves unique, explicit WMTS layer identifiers and city endpoints', () => {

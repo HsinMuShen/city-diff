@@ -1,0 +1,47 @@
+{
+  "cityId": "taichung",
+  "studyArea": "中區舊城核心",
+  "title": "中區舊城核心 OSM 步行路網分析快照",
+  "source": "OpenStreetMap contributors via Overpass API",
+  "sourceUrl": "https://www.openstreetmap.org/copyright",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "fetchedAt": "2026-08-10T17:59:01.316Z",
+  "osmDataTimestamp": "2026-08-10T17:57:51Z",
+  "license": "Open Database License (ODbL)",
+  "bbox": [
+    24.132,
+    120.668,
+    24.154,
+    120.697
+  ],
+  "filters": {
+    "requiredTags": [
+      "highway"
+    ],
+    "excludedAccess": [
+      "private"
+    ],
+    "acceptedHighwayClasses": [
+      "primary",
+      "secondary",
+      "tertiary",
+      "residential",
+      "unclassified",
+      "living_street",
+      "pedestrian",
+      "service",
+      "footway",
+      "path",
+      "steps",
+      "track"
+    ]
+  },
+  "featureCount": 2414,
+  "sha256": "1901e48b8e022e4c1f190de63eb8ece1a8797465f6765ce50672162b5f567693",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and pedestrian access tags may be incomplete.",
+    "Unnamed ways receive a generated display label containing their OSM way ID; the label is not a street name.",
+    "Ways are centreline segments, not legal rights-of-way or evidence of public access.",
+    "Grade, gates, construction conditions and parcel ownership require additional verification."
+  ]
+}

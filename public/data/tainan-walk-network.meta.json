@@ -1,0 +1,47 @@
+{
+  "cityId": "tainan",
+  "studyArea": "中西區與北區歷史核心",
+  "title": "中西區與北區歷史核心 OSM 步行路網分析快照",
+  "source": "OpenStreetMap contributors via Overpass API",
+  "sourceUrl": "https://www.openstreetmap.org/copyright",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "fetchedAt": "2026-08-10T17:56:20.671Z",
+  "osmDataTimestamp": "2026-08-10T17:54:51Z",
+  "license": "Open Database License (ODbL)",
+  "bbox": [
+    22.982,
+    120.187,
+    23.008,
+    120.219
+  ],
+  "filters": {
+    "requiredTags": [
+      "highway"
+    ],
+    "excludedAccess": [
+      "private"
+    ],
+    "acceptedHighwayClasses": [
+      "primary",
+      "secondary",
+      "tertiary",
+      "residential",
+      "unclassified",
+      "living_street",
+      "pedestrian",
+      "service",
+      "footway",
+      "path",
+      "steps",
+      "track"
+    ]
+  },
+  "featureCount": 4800,
+  "sha256": "b23459adf762f453116d9e6e5e2a801683cfda1bc81f2a4171d05478daac9b0d",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and pedestrian access tags may be incomplete.",
+    "Unnamed ways receive a generated display label containing their OSM way ID; the label is not a street name.",
+    "Ways are centreline segments, not legal rights-of-way or evidence of public access.",
+    "Grade, gates, construction conditions and parcel ownership require additional verification."
+  ]
+}
