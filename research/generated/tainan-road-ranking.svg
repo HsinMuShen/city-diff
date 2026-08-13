@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="780" viewBox="0 0 1200 780">
+    <rect width="100%" height="100%" fill="#f7f3ea"/>
+    <style>.title{font:700 25px system-ui;fill:#17211c}.note,.value{font:14px system-ui;fill:#59635d}.label{font:600 15px system-ui;fill:#17211c}</style>
+    <text x="24" y="36" class="title">Tainan roads ranked by computational signals</text>
+    <text x="24" y="59" class="note">Counts are morphology hypotheses, not verified historical alleys or intervention priorities.</text>
+    <text x="24" y="95" class="label">廣慈街</text>
+      <rect x="270" y="76" width="690" height="26" rx="4" fill="#e95b37"/>
+      <text x="972" y="95" class="value">17 signals · 7 stitch</text>
+<text x="24" y="139" class="label">西華南街</text>
+      <rect x="270" y="120" width="568" height="26" rx="4" fill="#e95b37"/>
+      <text x="850" y="139" class="value">14 signals · 7 stitch</text>
+<text x="24" y="183" class="label">東寧路西段</text>
+      <rect x="270" y="164" width="365" height="26" rx="4" fill="#e95b37"/>
+      <text x="647" y="183" class="value">9 signals · 2 stitch</text>
+<text x="24" y="227" class="label">觀亭街</text>
+      <rect x="270" y="208" width="325" height="26" rx="4" fill="#e95b37"/>
+      <text x="607" y="227" class="value">8 signals · 3 stitch</text>
+<text x="24" y="271" class="label">公園路</text>
+      <rect x="270" y="252" width="325" height="26" rx="4" fill="#e95b37"/>
+      <text x="607" y="271" class="value">8 signals · 1 stitch</text>
+<text x="24" y="315" class="label">前鋒路</text>
+      <rect x="270" y="296" width="325" height="26" rx="4" fill="#e95b37"/>
+      <text x="607" y="315" class="value">8 signals · 0 stitch</text>
+<text x="24" y="359" class="label">東豐路</text>
+      <rect x="270" y="340" width="284" height="26" rx="4" fill="#e95b37"/>
+      <text x="566" y="359" class="value">7 signals · 1 stitch</text>
+<text x="24" y="403" class="label">保安路</text>
+      <rect x="270" y="384" width="284" height="26" rx="4" fill="#e95b37"/>
+      <text x="566" y="403" class="value">7 signals · 0 stitch</text>
+<text x="24" y="447" class="label">府連路</text>
+      <rect x="270" y="428" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="447" class="value">6 signals · 1 stitch</text>
+<text x="24" y="491" class="label">慶東街</text>
+      <rect x="270" y="472" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="491" class="value">6 signals · 1 stitch</text>
+<text x="24" y="535" class="label">國華街一段</text>
+      <rect x="270" y="516" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="535" class="value">6 signals · 1 stitch</text>
+<text x="24" y="579" class="label">中正路</text>
+      <rect x="270" y="560" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="579" class="value">6 signals · 0 stitch</text>
+<text x="24" y="623" class="label">勝利路</text>
+      <rect x="270" y="604" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="623" class="value">6 signals · 0 stitch</text>
+<text x="24" y="667" class="label">康樂街</text>
+      <rect x="270" y="648" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="667" class="value">6 signals · 0 stitch</text>
+<text x="24" y="711" class="label">中山路</text>
+      <rect x="270" y="692" width="244" height="26" rx="4" fill="#e95b37"/>
+      <text x="526" y="711" class="value">6 signals · 0 stitch</text>
+  </svg>

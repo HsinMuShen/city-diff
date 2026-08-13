@@ -1,0 +1,30 @@
+[
+  {
+    "filename": "tainan-road-ranking.csv",
+    "sha256": "ba3482b4bd8cb434617dc2bab0d91d3d1f094f484fd8db1ada14499c3181c217"
+  },
+  {
+    "filename": "tainan-candidates.csv",
+    "sha256": "0db277babd1cbb89d5af63ec733688d00f9f13d42a2e990895ad9469f65b044c"
+  },
+  {
+    "filename": "tainan-review-sample.csv",
+    "sha256": "fd0cb34045e7dbd86d24c19787b26ad4c7309f081e8b25d796e606c79e1b9842"
+  },
+  {
+    "filename": "tainan-sensitivity.csv",
+    "sha256": "efea184e77f38b786953a069e75024945cbdcbdf9213130470da1e80e8b26f2d"
+  },
+  {
+    "filename": "tainan-road-ranking.svg",
+    "sha256": "730da674501560e12f5ff6bd79ea211382684865523ffdd7f870d6f6ce44d9d3"
+  },
+  {
+    "filename": "tainan-sensitivity.svg",
+    "sha256": "4508745ed1c660f77757e686d7ede33c7d996c3a8ccc4275fa61159cee22bb18"
+  },
+  {
+    "filename": "study-summary.json",
+    "sha256": "588e6bd754406dee0987f0c86fd6c986aaa38f1568307c21c1938e982a2f92ef"
+  }
+]

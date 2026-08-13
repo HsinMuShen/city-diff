@@ -3,10 +3,33 @@ import type { LostAlleyCandidate, RoadFeatureCollection, StitchPointCandidate, U
 import { lineLengthMeters } from './geo'
 
 const EARTH_RADIUS_METERS = 6_371_008.8
-const CONNECTION_TOLERANCE_METERS = 8
-const MIN_SELECTED_ROAD_DISTANCE_METERS = 3
-const MAX_SELECTED_ROAD_DISTANCE_METERS = 55
-const MAX_STITCH_GAP_METERS = 130
+export interface UrbanTraceParameters {
+  connectionToleranceMeters: number
+  minSelectedRoadDistanceMeters: number
+  maxSelectedRoadDistanceMeters: number
+  maxStitchGapMeters: number
+  minApproachScore: number
+  dedupeDistanceMeters: number
+  maxTargetSeparationMeters: number
+  maxOpposingScore: number
+  minDetourRatio: number
+  minExtraDistanceMeters: number
+  boundaryMarginMeters: number
+}
+
+export const DEFAULT_URBAN_TRACE_PARAMETERS: UrbanTraceParameters = {
+  connectionToleranceMeters: 8,
+  minSelectedRoadDistanceMeters: 3,
+  maxSelectedRoadDistanceMeters: 55,
+  maxStitchGapMeters: 130,
+  minApproachScore: 0.35,
+  dedupeDistanceMeters: 12,
+  maxTargetSeparationMeters: 90,
+  maxOpposingScore: -0.2,
+  minDetourRatio: 2.5,
+  minExtraDistanceMeters: 180,
+  boundaryMarginMeters: 25,
+}
 
 interface ProjectedPoint {
   x: number
@@ -25,25 +48,57 @@ interface GraphEdge {
   distance: number
 }
 
-export function analyzeUrbanTraces(roads: RoadFeatureCollection, selectedRoadName: string): UrbanTraceAnalysis {
+export function analyzeUrbanTraces(
+  roads: RoadFeatureCollection,
+  selectedRoadName: string,
+  parameters: Partial<UrbanTraceParameters> = {},
+): UrbanTraceAnalysis {
+  return createUrbanTraceAnalyzer(roads, parameters)(selectedRoadName)
+}
+
+export function createUrbanTraceAnalyzer(
+  roads: RoadFeatureCollection,
+  parameterOverrides: Partial<UrbanTraceParameters> = {},
+) {
+  const parameters = { ...DEFAULT_URBAN_TRACE_PARAMETERS, ...parameterOverrides }
+  const allCoordinates = roads.features.flatMap((feature) => feature.geometry.coordinates)
+  if (allCoordinates.length === 0) return () => emptyAnalysis()
+
+  const referenceLatitude = allCoordinates.reduce((total, coordinate) => total + coordinate[1], 0) / allCoordinates.length
+  const project = createProjector(referenceLatitude)
+  const graph = buildGraph(roads, project, parameters)
+
+  return (selectedRoadName: string): UrbanTraceAnalysis => analyzeSelectedRoad(
+    roads,
+    selectedRoadName,
+    graph,
+    project,
+    parameters,
+  )
+}
+
+function analyzeSelectedRoad(
+  roads: RoadFeatureCollection,
+  selectedRoadName: string,
+  graph: ReturnType<typeof buildGraph>,
+  project: (point: Position) => ProjectedPoint,
+  parameters: UrbanTraceParameters,
+): UrbanTraceAnalysis {
   const selectedLines = roads.features
     .filter((feature) => feature.properties.name === selectedRoadName)
     .map((feature) => feature.geometry.coordinates)
 
   if (selectedLines.length === 0) return emptyAnalysis()
 
-  const referenceLatitude = selectedLines.flat().reduce((total, coordinate) => total + coordinate[1], 0) / selectedLines.flat().length
-  const project = createProjector(referenceLatitude)
-  const graph = buildGraph(roads, project)
-  const rawCandidates = findEndpointCandidates(roads, selectedRoadName, selectedLines, graph, project)
-  const candidates = deduplicateCandidates(rawCandidates, project)
-  const stitchPoints = findStitchPoints(candidates, graph, project, selectedRoadName)
+  const rawCandidates = findEndpointCandidates(roads, selectedRoadName, selectedLines, graph, project, parameters)
+  const candidates = deduplicateCandidates(rawCandidates, project, parameters)
+  const stitchPoints = findStitchPoints(candidates, graph, project, selectedRoadName, parameters)
 
   return {
     lostAlleys: { type: 'FeatureCollection', features: candidates.map(({ feature }) => feature) },
     stitchPoints: { type: 'FeatureCollection', features: stitchPoints },
     limitations: [
-      'Candidates are derived from the current named-road OSM snapshot, not detected directly from historical raster pixels.',
+      'Candidates are derived from the current OSM walking-network snapshot, not detected directly from historical raster pixels.',
       'A road endpoint near another road may reflect mapping detail, a gate, private access, grade separation, or a real dead end.',
       'Connectivity candidates do not establish public access, ownership, engineering feasibility, or permission to intervene.',
     ],
@@ -56,6 +111,7 @@ function findEndpointCandidates(
   selectedLines: Position[][],
   graph: ReturnType<typeof buildGraph>,
   project: (point: Position) => ProjectedPoint,
+  parameters: UrbanTraceParameters,
 ) {
   const candidates: EndpointCandidate[] = []
 
@@ -68,12 +124,12 @@ function findEndpointCandidates(
     ]
 
     for (const { endpoint, inward, suffix } of endpoints) {
-      const graphKey = coordinateKey(endpoint, project)
+      const graphKey = coordinateKey(endpoint, project, parameters.connectionToleranceMeters)
       if ((graph.adjacency.get(graphKey)?.length ?? 0) !== 1) continue
-      if (isClippedAtStudyBoundary(endpoint, graph.bounds, project)) continue
+      if (isClippedAtStudyBoundary(endpoint, graph.bounds, project, parameters.boundaryMarginMeters)) continue
 
       const closest = closestPointOnLines(endpoint, selectedLines, project)
-      if (closest.distance < MIN_SELECTED_ROAD_DISTANCE_METERS || closest.distance > MAX_SELECTED_ROAD_DISTANCE_METERS) continue
+      if (closest.distance < parameters.minSelectedRoadDistanceMeters || closest.distance > parameters.maxSelectedRoadDistanceMeters) continue
 
       const endpointPoint = project(endpoint)
       const inwardPoint = project(inward)
@@ -82,7 +138,7 @@ function findEndpointCandidates(
         { x: endpointPoint.x - inwardPoint.x, y: endpointPoint.y - inwardPoint.y },
         { x: targetPoint.x - endpointPoint.x, y: targetPoint.y - endpointPoint.y },
       )
-      if (approach < 0.35) continue
+      if (approach < parameters.minApproachScore) continue
 
       const distance = Math.round(closest.distance)
       const roadName = road.properties.name
@@ -111,10 +167,14 @@ function findEndpointCandidates(
   return candidates
 }
 
-function deduplicateCandidates(candidates: EndpointCandidate[], project: (point: Position) => ProjectedPoint) {
+function deduplicateCandidates(
+  candidates: EndpointCandidate[],
+  project: (point: Position) => ProjectedPoint,
+  parameters: UrbanTraceParameters,
+) {
   const kept: EndpointCandidate[] = []
   for (const candidate of [...candidates].sort((a, b) => b.feature.properties.approach_score - a.feature.properties.approach_score)) {
-    if (kept.some((existing) => distanceProjected(project(existing.endpoint), project(candidate.endpoint)) < 12)) continue
+    if (kept.some((existing) => distanceProjected(project(existing.endpoint), project(candidate.endpoint)) < parameters.dedupeDistanceMeters)) continue
     kept.push(candidate)
   }
   return kept.sort((a, b) => a.feature.properties.distance_to_selected_m - b.feature.properties.distance_to_selected_m)
@@ -125,6 +185,7 @@ function findStitchPoints(
   graph: ReturnType<typeof buildGraph>,
   project: (point: Position) => ProjectedPoint,
   selectedRoadName: string,
+  parameters: UrbanTraceParameters,
 ) {
   const stitches: StitchPointCandidate[] = []
 
@@ -140,16 +201,18 @@ function findStitchPoints(
         { x: firstEndpoint.x - firstTarget.x, y: firstEndpoint.y - firstTarget.y },
         { x: secondEndpoint.x - secondTarget.x, y: secondEndpoint.y - secondTarget.y },
       )
-      if (opposingScore > -0.2) continue
+      if (opposingScore > parameters.maxOpposingScore) continue
       if (first.feature.properties.road_name === second.feature.properties.road_name) continue
-      if (distanceProjected(project(first.target), project(second.target)) > 90) continue
+      if (distanceProjected(project(first.target), project(second.target)) > parameters.maxTargetSeparationMeters) continue
 
       const directDistance = lineLengthMeters([first.endpoint, second.endpoint])
-      if (directDistance < 8 || directDistance > MAX_STITCH_GAP_METERS) continue
+      if (directDistance < parameters.connectionToleranceMeters || directDistance > parameters.maxStitchGapMeters) continue
 
       const networkDistance = shortestPathDistance(graph.adjacency, first.graphKey, second.graphKey)
       const detourRatio = Number.isFinite(networkDistance) ? networkDistance / directDistance : null
-      if (detourRatio !== null && detourRatio < 2.5 && networkDistance - directDistance < 180) continue
+      if (detourRatio !== null
+        && detourRatio < parameters.minDetourRatio
+        && networkDistance - directDistance < parameters.minExtraDistanceMeters) continue
 
       const directRounded = Math.round(directDistance)
       const networkRounded = Number.isFinite(networkDistance) ? Math.round(networkDistance) : null
@@ -182,7 +245,11 @@ function findStitchPoints(
     .slice(0, 12)
 }
 
-function buildGraph(roads: RoadFeatureCollection, project: (point: Position) => ProjectedPoint) {
+function buildGraph(
+  roads: RoadFeatureCollection,
+  project: (point: Position) => ProjectedPoint,
+  parameters: UrbanTraceParameters,
+) {
   const adjacency = new Map<string, GraphEdge[]>()
   const projectedCoordinates = roads.features.flatMap((road) => road.geometry.coordinates.map(project))
   const bounds = projectedCoordinates.length === 0
@@ -197,8 +264,8 @@ function buildGraph(roads: RoadFeatureCollection, project: (point: Position) => 
   for (const road of roads.features) {
     const coordinates = road.geometry.coordinates
     for (let index = 1; index < coordinates.length; index += 1) {
-      const startKey = coordinateKey(coordinates[index - 1], project)
-      const endKey = coordinateKey(coordinates[index], project)
+      const startKey = coordinateKey(coordinates[index - 1], project, parameters.connectionToleranceMeters)
+      const endKey = coordinateKey(coordinates[index], project, parameters.connectionToleranceMeters)
       if (startKey === endKey) continue
       const distance = lineLengthMeters([coordinates[index - 1], coordinates[index]])
       addEdge(adjacency, startKey, endKey, distance)
@@ -213,10 +280,10 @@ function isClippedAtStudyBoundary(
   point: Position,
   bounds: { minX: number; minY: number; maxX: number; maxY: number } | null,
   project: (point: Position) => ProjectedPoint,
+  margin: number,
 ) {
   if (!bounds || bounds.maxX - bounds.minX < 500 || bounds.maxY - bounds.minY < 500) return false
   const projected = project(point)
-  const margin = 25
   return projected.x - bounds.minX < margin
     || bounds.maxX - projected.x < margin
     || projected.y - bounds.minY < margin
@@ -292,9 +359,13 @@ function createProjector(referenceLatitude: number) {
   })
 }
 
-function coordinateKey(point: Position, project: (point: Position) => ProjectedPoint) {
+function coordinateKey(
+  point: Position,
+  project: (point: Position) => ProjectedPoint,
+  connectionToleranceMeters: number,
+) {
   const projected = project(point)
-  return `${Math.round(projected.x / CONNECTION_TOLERANCE_METERS)},${Math.round(projected.y / CONNECTION_TOLERANCE_METERS)}`
+  return `${Math.round(projected.x / connectionToleranceMeters)},${Math.round(projected.y / connectionToleranceMeters)}`
 }
 
 function cosineSimilarity(first: ProjectedPoint, second: ProjectedPoint) {

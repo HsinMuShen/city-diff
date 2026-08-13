@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { RoadFeatureCollection, RoadProperties } from '../types'
-import { analyzeUrbanTraces } from './urbanTraces'
+import { analyzeUrbanTraces, createUrbanTraceAnalyzer } from './urbanTraces'
 
 const properties = (osmId: number, name: string): RoadProperties => ({
   osm_id: osmId,
@@ -41,5 +41,15 @@ describe('urban trace candidate analysis', () => {
     const analysis = analyzeUrbanTraces(roads, '不存在')
     expect(analysis.lostAlleys.features).toEqual([])
     expect(analysis.stitchPoints.features).toEqual([])
+  })
+
+  it('supports a reusable analyzer for batch research', () => {
+    const analyze = createUrbanTraceAnalyzer(roads)
+    expect(analyze('中央大道')).toEqual(analyzeUrbanTraces(roads, '中央大道'))
+  })
+
+  it('allows sensitivity parameters to narrow the search radius', () => {
+    const analysis = analyzeUrbanTraces(roads, '中央大道', { maxSelectedRoadDistanceMeters: 10 })
+    expect(analysis.lostAlleys.features).toHaveLength(0)
   })
 })

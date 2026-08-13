@@ -416,7 +416,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       </button>
       <div className="urban-tool-dock" role="group" aria-label="城市痕跡工具">
         <button className={activeTool === 'lost-alleys' ? 'active' : undefined} aria-pressed={activeTool === 'lost-alleys'} onClick={() => onToolChange(activeTool === 'lost-alleys' ? 'explore' : 'lost-alleys')} title="找出朝向選定道路卻提前中止的巷道候選">
-          <ScanSearch size={15} /><span>消失巷弄</span>
+          <ScanSearch size={15} /><span>巷弄痕跡</span>
         </button>
         <button className={activeTool === 'change-film' ? 'active' : undefined} aria-pressed={activeTool === 'change-film'} onClick={() => onToolChange(activeTool === 'change-film' ? 'explore' : 'change-film')} title="點擊地圖並排查看同一位置的歷史版本">
           <Film size={15} /><span>變化膠卷</span>

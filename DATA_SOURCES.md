@@ -42,7 +42,7 @@ Each generated metadata file records the city, study area, extraction timestamp,
 
 `npm run data:network` generates a second OSM snapshot for each City Pack. Unlike the road-search snapshot, it includes named and unnamed ways in the following classes: `primary`, `secondary`, `tertiary`, `residential`, `unclassified`, `living_street`, `pedestrian`, `service`, `footway`, `path`, `steps`, and `track`. Ways explicitly tagged `access=private` are excluded. Unnamed features receive a generated interface label containing the OSM way ID; this is not presented as an official street name.
 
-The **消失巷弄偵測** prototype marks a morphology candidate when an OSM network endpoint:
+The **巷弄痕跡候選** prototype marks a morphology candidate when an OSM network endpoint:
 
 - has one graph connection in the snapped network;
 - lies 3–55 metres from the selected road centreline; and

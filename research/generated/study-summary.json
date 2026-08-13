@@ -1,0 +1,67 @@
+{
+  "generatedAt": "2026-08-13T14:44:59.699Z",
+  "studyArea": "中西區與北區歷史核心",
+  "namedRoadSnapshot": "2026-08-09T16:03:19Z",
+  "walkNetworkSnapshot": "2026-08-10T17:54:51Z",
+  "inputHashes": {
+    "namedRoads": "400f41d7198a17302a36a96dff438eefbe44320ea8b177ad3804b69c437b3412",
+    "walkNetwork": "b23459adf762f453116d9e6e5e2a801683cfda1bc81f2a4171d05478daac9b0d"
+  },
+  "parameters": {
+    "connectionToleranceMeters": 8,
+    "minSelectedRoadDistanceMeters": 3,
+    "maxSelectedRoadDistanceMeters": 55,
+    "maxStitchGapMeters": 130,
+    "minApproachScore": 0.35,
+    "dedupeDistanceMeters": 12,
+    "maxTargetSeparationMeters": 90,
+    "maxOpposingScore": -0.2,
+    "minDetourRatio": 2.5,
+    "minExtraDistanceMeters": 180,
+    "boundaryMarginMeters": 25
+  },
+  "totals": {
+    "roads": 401,
+    "roadsWithSignals": 193,
+    "alleyTraceRelations": 448,
+    "uniqueAlleyTraceSites": 379,
+    "stitchRelations": 30,
+    "uniqueStitchPairs": 30
+  },
+  "studyRoads": [
+    {
+      "road": "廣慈街",
+      "role": "high-signal case"
+    },
+    {
+      "road": "民生路二段",
+      "role": "median-positive comparison"
+    },
+    {
+      "road": "成功路",
+      "role": "length-matched zero-signal control"
+    }
+  ],
+  "reviewSampleRoads": [
+    "廣慈街",
+    "民生路二段",
+    "成功路",
+    "西華南街"
+  ],
+  "sensitivityBaseline": {
+    "connection_tolerance_m": 8,
+    "max_road_distance_m": 55,
+    "min_approach_score": 0.35,
+    "roads_tested": 30,
+    "alley_trace_candidates": 109,
+    "stitch_candidates": 6,
+    "candidates_per_road": 3.83,
+    "delta_from_baseline_percent": 0
+  },
+  "limitations": [
+    "Candidate counts are computational morphology signals, not verified historical alleys.",
+    "Historical rasters are used in the interface for human inspection but are not classified by this script.",
+    "No interviews, field observations, ownership records, or access permissions are claimed.",
+    "OpenStreetMap completeness and tagging practices affect every result."
+  ]
+}

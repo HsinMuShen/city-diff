@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560">
+    <rect width="100%" height="100%" fill="#f7f3ea"/>
+    <style>.title{font:700 25px system-ui;fill:#17211c}.note,.value{font:14px system-ui;fill:#59635d}.panel-title{font:650 16px system-ui;fill:#17211c}.label{font:600 14px system-ui;fill:#17211c}</style>
+    <text x="30" y="38" class="title">Candidate counts are highly parameter-sensitive</text>
+    <text x="30" y="62" class="note">Mean signals across 30 longest named roads; all 48 combinations range from 27 to 270 candidates.</text>
+    <text x="30" y="96" class="panel-title">Graph snap tolerance</text><text x="30" y="145" class="label">3m</text>
+        <rect x="102" y="125" width="189.34845452523905" height="28" rx="4" fill="#315b50"/>
+        <text x="301.34845452523905" y="145" class="value">141.9</text>
+<text x="30" y="223" class="label">5m</text>
+        <rect x="102" y="203" width="181.56548810317992" height="28" rx="4" fill="#315b50"/>
+        <text x="293.5654881031799" y="223" class="value">136.1</text>
+<text x="30" y="301" class="label">8m</text>
+        <rect x="102" y="281" width="143.09539693128752" height="28" rx="4" fill="#315b50"/>
+        <text x="255.09539693128752" y="301" class="value">107.3</text>
+<text x="30" y="379" class="label">12m</text>
+        <rect x="102" y="359" width="118.0787191460974" height="28" rx="4" fill="#315b50"/>
+        <text x="230.0787191460974" y="379" class="value">88.5</text>
+<text x="420" y="96" class="panel-title">Maximum distance to road</text><text x="420" y="145" class="label">30m</text>
+        <rect x="492" y="125" width="67.2114743162108" height="28" rx="4" fill="#315b50"/>
+        <text x="569.2114743162108" y="145" class="value">50.4</text>
+<text x="420" y="223" class="label">55m</text>
+        <rect x="492" y="203" width="156.8545697131421" height="28" rx="4" fill="#315b50"/>
+        <text x="658.8545697131422" y="223" class="value">117.6</text>
+<text x="420" y="301" class="label">80m</text>
+        <rect x="492" y="281" width="250" height="28" rx="4" fill="#315b50"/>
+        <text x="752" y="301" class="value">187.4</text>
+<text x="810" y="96" class="panel-title">Minimum approach alignment</text><text x="810" y="145" class="label">0.2</text>
+        <rect x="882" y="125" width="196.1307538358906" height="28" rx="4" fill="#315b50"/>
+        <text x="1088.1307538358906" y="145" class="value">147.0</text>
+<text x="810" y="223" class="label">0.35</text>
+        <rect x="882" y="203" width="165.66599955525908" height="28" rx="4" fill="#315b50"/>
+        <text x="1057.665999555259" y="223" class="value">124.2</text>
+<text x="810" y="301" class="label">0.5</text>
+        <rect x="882" y="281" width="148.09873248832557" height="28" rx="4" fill="#315b50"/>
+        <text x="1040.0987324883256" y="301" class="value">111.0</text>
+<text x="810" y="379" class="label">0.7</text>
+        <rect x="882" y="359" width="122.19257282632866" height="28" rx="4" fill="#315b50"/>
+        <text x="1014.1925728263286" y="379" class="value">91.6</text>
+    <text x="30" y="525" class="note">Lower snap tolerance, larger search distance, and looser alignment generally surface more hypotheses. This is a robustness warning, not an accuracy score.</text>
+  </svg>

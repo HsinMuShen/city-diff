@@ -138,10 +138,10 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
       {activeTool === 'lost-alleys' && (
         <section className="trace-results-card lost-alley-results" aria-labelledby="lost-alley-title">
           <header>
-            <div><ScanSearch size={17} /><span><h3 id="lost-alley-title">消失巷弄偵測</h3><small>形態候選 · 待歷史圖確認</small></span></div>
+            <div><ScanSearch size={17} /><span><h3 id="lost-alley-title">巷弄痕跡候選</h3><small>形態訊號 · 待歷史圖確認</small></span></div>
             <strong>{lostAlleyCandidates.length}</strong>
           </header>
-          <p>找出朝向{selectedRoad.name}、卻在接近道路前中止的 OSM 具名道路端點。點選候選後，用左側歷史圖判讀過去是否曾經連續。</p>
+          <p>找出朝向{selectedRoad.name}、卻在接近道路前中止的 OSM 步行路網端點。點選候選後，用左側歷史圖判讀過去是否曾經連續。</p>
           <div className="trace-candidate-list">
             {lostAlleyCandidates.slice(0, 8).map((candidate) => (
               <button key={candidate.properties.id} className={selectedTraceCandidateId === candidate.properties.id ? 'selected' : undefined} onClick={() => onTraceCandidateSelect(candidate.properties.id)} aria-pressed={selectedTraceCandidateId === candidate.properties.id}>
@@ -149,7 +149,7 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
                 <ArrowUpRight size={14} />
               </button>
             ))}
-            {lostAlleyCandidates.length === 0 && <div className="trace-empty">目前具名道路快照中沒有符合門檻的端點。這不表示此處不存在消失巷弄。</div>}
+            {lostAlleyCandidates.length === 0 && <div className="trace-empty">目前步行路網快照中沒有符合門檻的端點。這不表示此處不存在歷史連接。</div>}
           </div>
           <footer><AlertTriangle size={13} /><span>候選不是歷史事實；端點可能來自門禁、私人通道、高差或 OSM 繪製方式。快照：{formatDate(walkNetworkMetadata?.osmDataTimestamp)}</span></footer>
         </section>

@@ -9,6 +9,7 @@
     "data:culture": "node scripts/fetch-cultural-assets.mjs",
     "data:roads": "node scripts/fetch-osm-roads.mjs",
     "data:network": "node scripts/fetch-osm-walk-network.mjs",
+    "research:generate": "tsx scripts/generate-research-study.ts",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest"
@@ -26,6 +27,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^6.0.5",
+    "tsx": "^4.23.12",
     "typescript": "~5.7.2",
     "vite": "^8.2.1",
     "vitest": "^4.1.10"
