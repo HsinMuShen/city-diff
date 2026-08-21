@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from 'react'
 import Map, { Layer, NavigationControl, ScaleControl, Source, type MapLayerMouseEvent, type MapRef, type ViewStateChangeEvent } from 'react-map-gl/maplibre'
 import type { CircleLayerSpecification, FilterSpecification, LineLayerSpecification } from 'maplibre-gl'
-import { Columns2, Film, Landmark, MousePointer2, ScanSearch, Unplug } from 'lucide-react'
+import { Columns2, Film, MousePointer2 } from 'lucide-react'
+import { cityStudyArea, useI18n } from '../lib/i18n'
 import type { CityPack, CulturalAssetCollection, CulturalAssetFeature, HistoricalLayer, LostAlleyCollection, RoadFeatureCollection, RoadSummary, StitchPointCollection, UrbanTraceTool } from '../types'
 import { ChangeFilm } from './ChangeFilm'
+import { stitchPointEndpoints } from '../lib/urbanTraces'
 
 interface CompareMapProps {
   city: CityPack
@@ -20,7 +22,6 @@ interface CompareMapProps {
   selectedTraceCandidateId: string | null
   filmLocation: [number, number] | null
   onRoadSelect: (name: string) => void
-  onToggleCulture: () => void
   onCulturalAssetSelect: (caseId: string) => void
   onToolChange: (tool: UrbanTraceTool) => void
   onTraceCandidateSelect: (candidateId: string) => void
@@ -145,6 +146,7 @@ function UrbanTraceLayers({
 }) {
   const hoveredFilter: FilterSpecification = ['==', ['get', 'id'], hoveredId ?? '__no_hovered_trace__']
   const selectedFilter: FilterSpecification = ['==', ['get', 'id'], selectedId ?? '__no_selected_trace__']
+  const stitchEndpoints = stitchPointEndpoints(stitchPoints)
 
   if (activeTool === 'lost-alleys') {
     return (
@@ -159,13 +161,19 @@ function UrbanTraceLayers({
 
   if (activeTool === 'stitch-points') {
     return (
-      <Source id="stitch-point-candidates" type="geojson" data={stitchPoints} promoteId="id">
-        <Layer id="stitch-point-lines" type="line" paint={{ 'line-color': '#7d4fba', 'line-width': 4, 'line-dasharray': [1.2, 1.2], 'line-opacity': 0.9 }} />
-        <Layer id="stitch-point-ends" type="circle" paint={{ 'circle-radius': 5, 'circle-color': '#7d4fba', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2 }} />
-        {interactive && <Layer id="stitch-point-hit" type="line" paint={{ 'line-color': 'rgba(0,0,0,.01)', 'line-width': 18 }} />}
-        {interactive && <Layer id="hovered-stitch-point" type="line" filter={hoveredFilter} paint={{ 'line-color': '#c69cff', 'line-width': 8 }} />}
-        <Layer id="selected-stitch-point" type="line" filter={selectedFilter} paint={{ 'line-color': '#ff5430', 'line-width': 7 }} />
-      </Source>
+      <>
+        <Source id="stitch-point-candidates" type="geojson" data={stitchPoints} promoteId="id">
+          <Layer id="stitch-point-casing" type="line" paint={{ 'line-color': '#ffffff', 'line-width': 8, 'line-opacity': 0.88 }} />
+          <Layer id="stitch-point-lines" type="line" paint={{ 'line-color': '#7441ad', 'line-width': 4.5, 'line-dasharray': [1.2, 1.2], 'line-opacity': 1 }} />
+          {interactive && <Layer id="stitch-point-hit" type="line" paint={{ 'line-color': 'rgba(0,0,0,.01)', 'line-width': 24 }} />}
+          {interactive && <Layer id="hovered-stitch-point" type="line" filter={hoveredFilter} paint={{ 'line-color': '#d0a8ff', 'line-width': 9 }} />}
+          <Layer id="selected-stitch-point" type="line" filter={selectedFilter} paint={{ 'line-color': '#ff5430', 'line-width': 8 }} />
+        </Source>
+        <Source id="stitch-point-endpoints" type="geojson" data={stitchEndpoints}>
+          <Layer id="stitch-point-ends" type="circle" paint={{ 'circle-radius': 6, 'circle-color': '#7441ad', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2.5 }} />
+          <Layer id="selected-stitch-point-ends" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 8, 'circle-color': '#ff5430', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 }} />
+        </Source>
+      </>
     )
   }
 
@@ -182,7 +190,8 @@ function FilmLocationLayers({ location }: { location: [number, number] | null })
   )
 }
 
-export function CompareMap({ city, historicalLayer, roads, roadNameCount, selectedRoad, culturalAssets, cultureVisible, selectedCulturalAsset, activeTool, lostAlleyCandidates, stitchPointCandidates, selectedTraceCandidateId, filmLocation, onRoadSelect, onToggleCulture, onCulturalAssetSelect, onToolChange, onTraceCandidateSelect, onFilmLocationSelect, onHistoricalLayerSelect }: CompareMapProps) {
+export function CompareMap({ city, historicalLayer, roads, roadNameCount, selectedRoad, culturalAssets, cultureVisible, selectedCulturalAsset, activeTool, lostAlleyCandidates, stitchPointCandidates, selectedTraceCandidateId, filmLocation, onRoadSelect, onCulturalAssetSelect, onToolChange, onTraceCandidateSelect, onFilmLocationSelect, onHistoricalLayerSelect }: CompareMapProps) {
+  const { locale, t } = useI18n()
   const [split, setSplit] = useState(52)
   const [hoveredRoad, setHoveredRoad] = useState<{ name: string; x: number; y: number } | null>(null)
   const [hoveredCulturalAsset, setHoveredCulturalAsset] = useState<{ caseId: string; name: string; classification: string; x: number; y: number } | null>(null)
@@ -285,11 +294,11 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     if (traceFeature && typeof traceId === 'string') {
       const isLostAlley = traceFeature.layer.id === 'lost-alley-hit'
       const label = isLostAlley
-        ? String(traceFeature.properties?.road_name ?? '巷道端點')
-        : `${String(traceFeature.properties?.from_road ?? '端點')} ↔ ${String(traceFeature.properties?.to_road ?? '端點')}`
+        ? String(traceFeature.properties?.road_name ?? t('alleyEndpoint'))
+        : `${String(traceFeature.properties?.from_road ?? t('endpoint'))} ↔ ${String(traceFeature.properties?.to_road ?? t('endpoint'))}`
       const detail = isLostAlley
-        ? `距選定道路約 ${String(traceFeature.properties?.distance_to_selected_m ?? '—')}m`
-        : `直線約 ${String(traceFeature.properties?.direct_distance_m ?? '—')}m`
+        ? t('distanceToRoad', { value: String(traceFeature.properties?.distance_to_selected_m ?? '—') })
+        : t('directAbout', { value: String(traceFeature.properties?.direct_distance_m ?? '—') })
       setHoveredRoad(null)
       setHoveredCulturalAsset(null)
       setHoveredTrace({ id: traceId, label, detail, x: event.point.x, y: event.point.y })
@@ -304,7 +313,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       setHoveredCulturalAsset({
         caseId,
         name: assetName,
-        classification: typeof culturalFeature?.properties?.classification === 'string' ? culturalFeature.properties.classification : '古蹟',
+        classification: typeof culturalFeature?.properties?.classification === 'string' ? culturalFeature.properties.classification : t('monuments'),
         x: event.point.x,
         y: event.point.y,
       })
@@ -409,42 +418,28 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
         </Map>
       </div>
 
-      <div className="map-side-label history-label"><span>{historicalLayer.label}</span><strong>歷史圖資</strong></div>
-      <div className="map-side-label now-label"><span>NOW</span><strong>現代道路</strong></div>
-      <button className={`context-layer-toggle${cultureVisible ? ' active' : ''}`} aria-pressed={cultureVisible} onClick={onToggleCulture}>
-        <Landmark size={15} /><span>法定古蹟</span><small>{cultureVisible ? 'ON' : 'OFF'}</small>
-      </button>
-      <div className="urban-tool-dock" role="group" aria-label="城市痕跡工具">
-        <button className={activeTool === 'lost-alleys' ? 'active' : undefined} aria-pressed={activeTool === 'lost-alleys'} onClick={() => onToolChange(activeTool === 'lost-alleys' ? 'explore' : 'lost-alleys')} title="找出朝向選定道路卻提前中止的巷道候選">
-          <ScanSearch size={15} /><span>巷弄痕跡</span>
-        </button>
-        <button className={activeTool === 'change-film' ? 'active' : undefined} aria-pressed={activeTool === 'change-film'} onClick={() => onToolChange(activeTool === 'change-film' ? 'explore' : 'change-film')} title="點擊地圖並排查看同一位置的歷史版本">
-          <Film size={15} /><span>變化膠卷</span>
-        </button>
-        <button className={activeTool === 'stitch-points' ? 'active' : undefined} aria-pressed={activeTool === 'stitch-points'} onClick={() => onToolChange(activeTool === 'stitch-points' ? 'explore' : 'stitch-points')} title="找出道路兩側距離近、路網繞行明顯的候選連接">
-          <Unplug size={15} /><span>城市縫合點</span>
-        </button>
-      </div>
-      {!selectedRoad && <div className="study-scope-chip">{city.studyArea} · {roadNameCount} 條道路</div>}
+      <div className="map-side-label history-label"><span>{historicalLayer.label}</span><strong>{t('historyMap')}</strong></div>
+      <div className="map-side-label now-label"><span>NOW</span><strong>{t('modernRoads')}</strong></div>
+      {!selectedRoad && <div className="study-scope-chip">{cityStudyArea(city, locale)} · {roadNameCount} {t('roadsAvailable')}</div>}
       {hoveredRoad && (
         <div className="road-hover-label" style={{ left: hoveredRoad.x + 12, top: hoveredRoad.y + 12 }}>
-          <strong>{hoveredRoad.name}</strong><span>點擊選擇</span>
+          <strong>{hoveredRoad.name}</strong><span>{t('clickSelect')}</span>
         </div>
       )}
       {hoveredCulturalAsset && (
         <div className="road-hover-label cultural" style={{ left: hoveredCulturalAsset.x + 12, top: hoveredCulturalAsset.y + 12 }}>
-          <strong>{hoveredCulturalAsset.name}</strong><span>{hoveredCulturalAsset.classification} · 點擊定位</span>
+          <strong>{hoveredCulturalAsset.name}</strong><span>{hoveredCulturalAsset.classification} · {t('clickLocate')}</span>
         </div>
       )}
       {hoveredTrace && (
         <div className="road-hover-label trace" style={{ left: hoveredTrace.x + 12, top: hoveredTrace.y + 12 }}>
-          <strong>{hoveredTrace.label}</strong><span>{hoveredTrace.detail} · 點擊查看</span>
+          <strong>{hoveredTrace.label}</strong><span>{hoveredTrace.detail} · {t('clickInspect')}</span>
         </div>
       )}
       <div className="compare-divider" style={{ left: `${split}%` }}>
         <span
           role="separator"
-          aria-label="拖曳調整歷史與現代地圖比較界線"
+          aria-label={t('dragDivider')}
           aria-valuemin={8}
           aria-valuemax={92}
           aria-valuenow={Math.round(split)}
@@ -457,21 +452,21 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
         </span>
       </div>
       {activeTool === 'explore' && !selectedRoad && (
-        <div className="map-hint"><MousePointer2 size={16} /><span>點綠色道路，或從右側搜尋</span></div>
+        <div className="map-hint"><MousePointer2 size={16} /><span>{t('mapSelectHint')}</span></div>
       )}
       {(activeTool === 'lost-alleys' || activeTool === 'stitch-points') && !selectedRoad && (
-        <div className="map-hint"><MousePointer2 size={16} /><span>先選擇一條道路，再產生候選點</span></div>
+        <div className="map-hint"><MousePointer2 size={16} /><span>{t('selectRoadFirst')}</span></div>
       )}
       {activeTool === 'change-film' && !filmLocation && (
-        <div className="map-hint film-hint"><Film size={16} /><span>點擊地圖任意位置，建立城市變化膠卷</span></div>
+        <div className="map-hint film-hint"><Film size={16} /><span>{t('filmHint')}</span></div>
       )}
       {activeTool === 'change-film' && filmLocation && (
         <ChangeFilm city={city} location={filmLocation} roads={roads} activeLayer={historicalLayer} onLayerSelect={onHistoricalLayerSelect} onClose={() => onToolChange('explore')} />
       )}
       <div className="map-attribution">
-        <a href={historicalLayer.sourceUrl} target="_blank" rel="noreferrer">歷史圖資 © 中央研究院</a>
-        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">道路 © OpenStreetMap contributors</a>
-        <span>底圖 © CARTO</span>
+        <a href={historicalLayer.sourceUrl} target="_blank" rel="noreferrer">Historical maps © Academia Sinica</a>
+        <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">{locale === 'en' ? 'Roads' : '道路'} © OpenStreetMap contributors</a>
+        <span>{locale === 'en' ? 'Basemap' : '底圖'} © CARTO</span>
       </div>
     </main>
   )

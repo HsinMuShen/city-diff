@@ -1,4 +1,5 @@
 import { Check, ChevronDown, Database, MapPinned } from 'lucide-react'
+import { cityDescription, cityName, cityStudyArea, layerDescription, layerTitle, useI18n } from '../lib/i18n'
 import type { CityPack, HistoricalLayer } from '../types'
 
 interface TimelineProps {
@@ -9,20 +10,21 @@ interface TimelineProps {
 }
 
 export function Timeline({ city, layers, activeLayer, onChange }: TimelineProps) {
+  const { locale, t } = useI18n()
   return (
     <aside className="timeline-panel">
       <header className="city-context">
-        <p className="eyebrow">研究範圍</p>
-        <h2>{city.name}</h2>
-        <strong>{city.studyArea}</strong>
-        <p>{city.description}</p>
+        <p className="eyebrow">{t('researchScope')}</p>
+        <h2>{cityName(city, locale)}</h2>
+        <strong>{cityStudyArea(city, locale)}</strong>
+        <p>{cityDescription(city, locale)}</p>
       </header>
 
       <section className="version-section">
         <div className="section-title">
           <div>
-            <p className="eyebrow">Historical layers</p>
-            <h2>選擇版本</h2>
+            <p className="eyebrow">{t('historicalLayers')}</p>
+            <h2>{t('chooseVersion')}</h2>
           </div>
           <span>{layers.length}</span>
         </div>
@@ -32,25 +34,25 @@ export function Timeline({ city, layers, activeLayer, onChange }: TimelineProps)
               <span className="commit-node">{activeLayer.id === layer.id ? <Check size={12} /> : index + 1}</span>
               <span className="version-copy">
                 <strong>{layer.label}</strong>
-                <small>{layer.title}</small>
+                <small>{layerTitle(layer, locale)}</small>
               </span>
             </button>
           ))}
           <div className="version-item current-version">
             <span className="commit-node"><MapPinned size={12} /></span>
-            <span className="version-copy"><strong>NOW</strong><small>OpenStreetMap 道路</small></span>
+            <span className="version-copy"><strong>NOW</strong><small>{t('currentRoads')}</small></span>
           </div>
         </div>
       </section>
 
       <section className="active-commit">
-        <div className="active-commit-heading"><Database size={14} /><span>目前顯示</span></div>
-        <strong>{activeLayer.period} · {activeLayer.title}</strong>
-        <p>{activeLayer.description}</p>
+        <div className="active-commit-heading"><Database size={14} /><span>{t('currentlyShowing')}</span></div>
+        <strong>{activeLayer.period} · {layerTitle(activeLayer, locale)}</strong>
+        <p>{layerDescription(activeLayer, locale)}</p>
         <details>
-          <summary>圖層來源 <ChevronDown size={14} /></summary>
+          <summary>{t('layerSource')} <ChevronDown size={14} /></summary>
           <code>{activeLayer.sourceLayerId}</code>
-          <a href={activeLayer.sourceUrl} target="_blank" rel="noreferrer">開啟中研院圖台 ↗</a>
+          <a href={activeLayer.sourceUrl} target="_blank" rel="noreferrer">{t('openSourceMap')}</a>
         </details>
       </section>
     </aside>

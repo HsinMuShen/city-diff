@@ -1,48 +1,44 @@
-import { BookOpen, ChevronDown, GitCompareArrows, PanelLeft, PanelRight } from 'lucide-react'
-import type { CityPack } from '../types'
+import { BookOpen, ChevronDown, GitCompareArrows, Languages } from 'lucide-react'
+import { cityName, cityQuestion, useI18n } from '../lib/i18n'
+import type { CityPack, Locale } from '../types'
 
 interface HeaderProps {
   cities: readonly CityPack[]
   activeCity: CityPack
-  timelineVisible: boolean
-  inspectorVisible: boolean
+  locale: Locale
   onCityChange: (city: CityPack) => void
-  onToggleTimeline: () => void
-  onToggleInspector: () => void
+  onLocaleChange: (locale: Locale) => void
   onOpenMethod: () => void
 }
 
-export function Header({ cities, activeCity, timelineVisible, inspectorVisible, onCityChange, onToggleTimeline, onToggleInspector, onOpenMethod }: HeaderProps) {
+export function Header({ cities, activeCity, locale, onCityChange, onLocaleChange, onOpenMethod }: HeaderProps) {
+  const { t } = useI18n()
   return (
     <header className="app-header">
       <div className="brand">
         <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
         <div>
-          <p className="eyebrow">城市版本誌 · Urban version control</p>
+          <p className="eyebrow">{t('cityVersionControl')}</p>
           <h1>City <em>Diff</em></h1>
         </div>
       </div>
       <label className="city-switcher">
-        <span>研究城市</span>
+        <span>{t('studyCity')}</span>
         <select value={activeCity.id} onChange={(event) => onCityChange(cities.find((city) => city.id === event.target.value) ?? activeCity)}>
-          {cities.map((city) => <option key={city.id} value={city.id}>{city.name} · {city.studyArea}</option>)}
+          {cities.map((city) => <option key={city.id} value={city.id}>{cityName(city, locale)}</option>)}
         </select>
         <ChevronDown size={15} aria-hidden="true" />
       </label>
       <div className="research-question">
         <GitCompareArrows size={15} />
-        <p>{activeCity.researchQuestion}</p>
+        <p>{cityQuestion(activeCity, locale)}</p>
       </div>
       <div className="header-actions">
-        <div className="panel-toggles" role="group" aria-label="側邊欄顯示設定">
-          <button className={timelineVisible ? 'panel-toggle active' : 'panel-toggle'} aria-pressed={timelineVisible} onClick={onToggleTimeline} title={timelineVisible ? '隱藏城市版本欄' : '顯示城市版本欄'}>
-            <PanelLeft size={16} /><span>版本欄</span>
-          </button>
-          <button className={inspectorVisible ? 'panel-toggle active' : 'panel-toggle'} aria-pressed={inspectorVisible} onClick={onToggleInspector} title={inspectorVisible ? '隱藏道路分析欄' : '顯示道路分析欄'}>
-            <PanelRight size={16} /><span>分析欄</span>
-          </button>
-        </div>
-        <button className="ghost-button" onClick={onOpenMethod}><BookOpen size={15} /> 資料與方法</button>
+        <button className="language-switcher" onClick={() => onLocaleChange(locale === 'en' ? 'zh-TW' : 'en')} aria-label={`${t('language')}: ${locale === 'en' ? '中文' : 'English'}`}>
+          <Languages size={15} />
+          <span>{locale === 'en' ? '中' : 'EN'}</span>
+        </button>
+        <button className="ghost-button" onClick={onOpenMethod}><BookOpen size={15} /> {t('method')}</button>
       </div>
     </header>
   )

@@ -5,7 +5,9 @@ export interface HistoricalLayer {
   label: string
   period: string
   title: string
+  titleEn: string
   description: string
+  descriptionEn: string
   sourceLayerId: string
   tileUrl: string
   sourceUrl: string
@@ -17,10 +19,14 @@ export type CityId = 'tainan' | 'kaohsiung' | 'taichung' | 'taipei'
 export interface CityPack {
   id: CityId
   name: string
+  nameEn: string
   shortName: string
   studyArea: string
+  studyAreaEn: string
   description: string
+  descriptionEn: string
   researchQuestion: string
+  researchQuestionEn: string
   center: [number, number]
   zoom: number
   studyBounds: [number, number, number, number]
@@ -30,6 +36,8 @@ export interface CityPack {
   walkNetworkMetadataUrl: string
   historicalLayers: readonly HistoricalLayer[]
 }
+
+export type Locale = 'zh-TW' | 'en'
 
 export interface RoadProperties {
   osm_id: number

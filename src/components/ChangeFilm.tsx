@@ -1,6 +1,7 @@
 import { LocateFixed, X } from 'lucide-react'
 import Map, { Layer, Source } from 'react-map-gl/maplibre'
 import type { CityPack, HistoricalLayer, RoadFeatureCollection } from '../types'
+import { layerTitle, useI18n } from '../lib/i18n'
 
 interface ChangeFilmProps {
   city: CityPack
@@ -23,10 +24,11 @@ function LocationMarker({ location }: { location: [number, number] }) {
 }
 
 function FilmFrame({ city, layer, location, active, onSelect }: { city: CityPack; layer: HistoricalLayer; location: [number, number]; active: boolean; onSelect: () => void }) {
+  const { locale } = useI18n()
   return (
     <article className={`film-frame${active ? ' active' : ''}`}>
       <button className="film-frame-heading" onClick={onSelect} aria-pressed={active}>
-        <span>{layer.label}</span><strong>{layer.title}</strong>
+        <span>{layer.label}</span><strong>{layerTitle(layer, locale)}</strong>
       </button>
       <div className="film-frame-map">
         <Map initialViewState={{ longitude: location[0], latitude: location[1], zoom: Math.max(city.zoom, 14.8), bearing: 0, pitch: 0 }} mapStyle={baseMapStyle} interactive={false} attributionControl={false} reuseMaps>
@@ -41,9 +43,10 @@ function FilmFrame({ city, layer, location, active, onSelect }: { city: CityPack
 }
 
 function CurrentFilmFrame({ city, location, roads }: { city: CityPack; location: [number, number]; roads: RoadFeatureCollection | null }) {
+  const { t } = useI18n()
   return (
     <article className="film-frame current">
-      <div className="film-frame-heading"><span>NOW</span><strong>現代道路</strong></div>
+      <div className="film-frame-heading"><span>NOW</span><strong>{t('modernRoads')}</strong></div>
       <div className="film-frame-map">
         <Map initialViewState={{ longitude: location[0], latitude: location[1], zoom: Math.max(city.zoom, 14.8), bearing: 0, pitch: 0 }} mapStyle={baseMapStyle} interactive={false} attributionControl={false} reuseMaps>
           {roads && (
@@ -59,11 +62,12 @@ function CurrentFilmFrame({ city, location, roads }: { city: CityPack; location:
 }
 
 export function ChangeFilm({ city, location, roads, activeLayer, onLayerSelect, onClose }: ChangeFilmProps) {
+  const { t } = useI18n()
   return (
-    <section className="change-film" aria-label="城市變化膠卷">
+    <section className="change-film" aria-label={t('filmTitle')}>
       <header>
-        <div><LocateFixed size={16} /><span><strong>城市變化膠卷</strong><small>{location[1].toFixed(5)}, {location[0].toFixed(5)} · 相同位置與比例</small></span></div>
-        <button onClick={onClose} aria-label="關閉城市變化膠卷"><X size={16} /></button>
+        <div><LocateFixed size={16} /><span><strong>{t('filmTitle')}</strong><small>{location[1].toFixed(5)}, {location[0].toFixed(5)} · {t('samePosition')}</small></span></div>
+        <button onClick={onClose} aria-label={t('closeFilm')}><X size={16} /></button>
       </header>
       <div className="film-strip">
         {city.historicalLayers.map((layer) => (
@@ -71,7 +75,7 @@ export function ChangeFilm({ city, location, roads, activeLayer, onLayerSelect, 
         ))}
         <CurrentFilmFrame city={city} location={location} roads={roads} />
       </div>
-      <p>膠卷只把同一座標並排，圖種、比例尺、測繪目的與配準誤差不同；視覺差異不等於同年發生的都市事件。</p>
+      <p>{t('filmCaveat')}</p>
     </section>
   )
 }

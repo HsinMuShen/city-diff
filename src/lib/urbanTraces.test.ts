@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { RoadFeatureCollection, RoadProperties } from '../types'
-import { analyzeUrbanTraces, createUrbanTraceAnalyzer } from './urbanTraces'
+import { analyzeUrbanTraces, createUrbanTraceAnalyzer, stitchPointEndpoints } from './urbanTraces'
 
 const properties = (osmId: number, name: string): RoadProperties => ({
   osm_id: osmId,
@@ -35,6 +35,14 @@ describe('urban trace candidate analysis', () => {
     expect(analysis.stitchPoints.features).toHaveLength(1)
     expect(analysis.stitchPoints.features[0].properties.direct_distance_m).toBeGreaterThan(50)
     expect(analysis.stitchPoints.features[0].properties.status).toBe('connectivity_candidate')
+  })
+
+  it('exposes both endpoints of every stitch line for map interaction', () => {
+    const stitches = analyzeUrbanTraces(roads, '中央大道').stitchPoints
+    const endpoints = stitchPointEndpoints(stitches)
+    expect(endpoints.features).toHaveLength(stitches.features.length * 2)
+    expect(endpoints.features.map((feature) => feature.properties.endpoint_index)).toEqual([0, 1])
+    expect(endpoints.features.every((feature) => feature.geometry.type === 'Point')).toBe(true)
   })
 
   it('returns empty collections for an unknown road', () => {

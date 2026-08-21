@@ -1,5 +1,5 @@
-import type { Position } from 'geojson'
-import type { LostAlleyCandidate, RoadFeatureCollection, StitchPointCandidate, UrbanTraceAnalysis } from '../types'
+import type { FeatureCollection, Point, Position } from 'geojson'
+import type { LostAlleyCandidate, RoadFeatureCollection, StitchPointCandidate, StitchPointCollection, StitchPointProperties, UrbanTraceAnalysis } from '../types'
 import { lineLengthMeters } from './geo'
 
 const EARTH_RADIUS_METERS = 6_371_008.8
@@ -29,6 +29,17 @@ export const DEFAULT_URBAN_TRACE_PARAMETERS: UrbanTraceParameters = {
   minDetourRatio: 2.5,
   minExtraDistanceMeters: 180,
   boundaryMarginMeters: 25,
+}
+
+export function stitchPointEndpoints(stitchPoints: StitchPointCollection): FeatureCollection<Point, StitchPointProperties & { endpoint_index: number }> {
+  return {
+    type: 'FeatureCollection',
+    features: stitchPoints.features.flatMap((candidate) => candidate.geometry.coordinates.map((coordinates, endpointIndex) => ({
+      type: 'Feature' as const,
+      properties: { ...candidate.properties, endpoint_index: endpointIndex },
+      geometry: { type: 'Point' as const, coordinates },
+    }))),
+  }
 }
 
 interface ProjectedPoint {

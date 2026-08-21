@@ -4,17 +4,24 @@ import { Header } from './components/Header'
 import { MethodDrawer } from './components/MethodDrawer'
 import { RoadInspector } from './components/RoadInspector'
 import { Timeline } from './components/Timeline'
+import { WorkspaceToolbar } from './components/WorkspaceToolbar'
 import { cityPacks, findCityPack } from './data/cityPacks'
 import { findNearbyCulturalAssets } from './lib/culture'
 import { rankRoads, summarizeRoad } from './lib/geo'
 import { analyzeUrbanTraces } from './lib/urbanTraces'
-import type { CityPack, CulturalAssetCollection, CulturalAssetMetadata, HistoricalLayer, RoadFeatureCollection, RoadMetadata, UrbanTraceTool } from './types'
+import { I18nProvider } from './lib/i18n'
+import type { CityPack, CulturalAssetCollection, CulturalAssetMetadata, HistoricalLayer, Locale, RoadFeatureCollection, RoadMetadata, UrbanTraceTool } from './types'
 
 const initialParameters = new URLSearchParams(window.location.search)
 const initialCity = findCityPack(initialParameters.get('city'))
 const initialLayer = initialCity.historicalLayers.find((layer) => layer.id === initialParameters.get('version')) ?? initialCity.historicalLayers[0]
+const requestedLocale = initialParameters.get('lang')
+const initialLocale: Locale = requestedLocale === 'en' || requestedLocale === 'zh-TW'
+  ? requestedLocale
+  : navigator.language.toLowerCase().startsWith('zh') ? 'zh-TW' : 'en'
 
 function App() {
+  const [locale, setLocale] = useState<Locale>(initialLocale)
   const [activeCity, setActiveCity] = useState<CityPack>(initialCity)
   const [activeLayer, setActiveLayer] = useState<HistoricalLayer>(initialLayer)
   const [roads, setRoads] = useState<RoadFeatureCollection | null>(null)
@@ -110,17 +117,32 @@ function App() {
     if (!walkNetwork || !selectedRoadName) return analyzeUrbanTraces({ type: 'FeatureCollection', features: [] }, '')
     return analyzeUrbanTraces(walkNetwork, selectedRoadName)
   }, [selectedRoadName, walkNetwork])
+
+  useEffect(() => {
+    document.documentElement.lang = locale
+    document.title = locale === 'en' ? 'City Diff | Urban Version Control' : 'City Diff｜城市版本誌'
+    document.querySelector('meta[name="description"]')?.setAttribute('content', locale === 'en'
+      ? `Compare historical maps, current streets, and urban morphology in ${activeCity.nameEn}.`
+      : `比較${activeCity.name}的歷史圖資、今日道路與城市形態候選。`)
+  }, [activeCity, locale])
+
+  useEffect(() => {
+    if (selectedTraceCandidateId) return
+    if (activeTool === 'stitch-points') setSelectedTraceCandidateId(urbanTraceAnalysis.stitchPoints.features[0]?.properties.id ?? null)
+    if (activeTool === 'lost-alleys') setSelectedTraceCandidateId(urbanTraceAnalysis.lostAlleys.features[0]?.properties.id ?? null)
+  }, [activeTool, selectedTraceCandidateId, urbanTraceAnalysis])
   const workspaceClassName = [
     'workspace',
     !timelineVisible && 'timeline-hidden',
     !inspectorVisible && 'inspector-hidden',
   ].filter(Boolean).join(' ')
 
-  const updateLocation = (cityId: string, roadName: string | null, versionId: string) => {
+  const updateLocation = (cityId: string, roadName: string | null, versionId: string, language = locale) => {
     const parameters = new URLSearchParams()
     parameters.set('city', cityId)
     if (roadName) parameters.set('road', roadName)
     parameters.set('version', versionId)
+    parameters.set('lang', language)
     window.history.replaceState({}, '', `${window.location.pathname}?${parameters.toString()}`)
   }
 
@@ -166,23 +188,45 @@ function App() {
 
   const handleToolChange = (tool: UrbanTraceTool) => {
     setActiveTool(tool)
-    setSelectedTraceCandidateId(null)
+    setInspectorVisible(true)
+    setSelectedTraceCandidateId(tool === 'stitch-points'
+      ? urbanTraceAnalysis.stitchPoints.features[0]?.properties.id ?? null
+      : tool === 'lost-alleys' ? urbanTraceAnalysis.lostAlleys.features[0]?.properties.id ?? null : null)
     if (tool !== 'change-film') setFilmLocation(null)
   }
 
+  const handleTraceCandidateSelect = (candidateId: string) => {
+    setSelectedTraceCandidateId(candidateId)
+    setInspectorVisible(true)
+  }
+
+  const handleLocaleChange = (nextLocale: Locale) => {
+    setLocale(nextLocale)
+    updateLocation(activeCity.id, selectedRoadName, activeLayer.id, nextLocale)
+  }
+
   return (
+    <I18nProvider locale={locale}>
     <div className="app-shell">
       <Header
         cities={cityPacks}
         activeCity={activeCity}
-        timelineVisible={timelineVisible}
-        inspectorVisible={inspectorVisible}
+        locale={locale}
         onCityChange={handleCityChange}
-        onToggleTimeline={() => setTimelineVisible((visible) => !visible)}
-        onToggleInspector={() => setInspectorVisible((visible) => !visible)}
+        onLocaleChange={handleLocaleChange}
         onOpenMethod={() => setMethodOpen(true)}
       />
-      {dataError && <div className="data-error">{dataError}。請執行 <code>npm run data:roads</code> 與 <code>npm run data:network</code> 後重新整理。</div>}
+      <WorkspaceToolbar
+        activeTool={activeTool}
+        timelineVisible={timelineVisible}
+        inspectorVisible={inspectorVisible}
+        cultureVisible={cultureVisible}
+        onToolChange={handleToolChange}
+        onToggleTimeline={() => setTimelineVisible((visible) => !visible)}
+        onToggleInspector={() => setInspectorVisible((visible) => !visible)}
+        onToggleCulture={handleCultureToggle}
+      />
+      {dataError && <div className="data-error">{locale === 'en' ? 'Data failed to load. Refresh the page or try again later.' : `${dataError}。請重新整理或稍後再試。`}</div>}
       <div className={workspaceClassName}>
         <Timeline city={activeCity} layers={activeCity.historicalLayers} activeLayer={activeLayer} onChange={handleLayerChange} />
         <CompareMap
@@ -201,10 +245,9 @@ function App() {
           selectedTraceCandidateId={selectedTraceCandidateId}
           filmLocation={filmLocation}
           onRoadSelect={handleRoadSelect}
-          onToggleCulture={handleCultureToggle}
           onCulturalAssetSelect={handleCulturalAssetSelect}
           onToolChange={handleToolChange}
-          onTraceCandidateSelect={setSelectedTraceCandidateId}
+          onTraceCandidateSelect={handleTraceCandidateSelect}
           onFilmLocationSelect={setFilmLocation}
           onHistoricalLayerSelect={handleLayerChange}
         />
@@ -227,11 +270,12 @@ function App() {
           onSelect={handleRoadSelect}
           onClear={handleRoadClear}
           onCulturalAssetSelect={handleCulturalAssetSelect}
-          onTraceCandidateSelect={setSelectedTraceCandidateId}
+          onTraceCandidateSelect={handleTraceCandidateSelect}
         />
       </div>
       <MethodDrawer city={activeCity} open={methodOpen} onClose={() => setMethodOpen(false)} />
     </div>
+    </I18nProvider>
   )
 }
 
