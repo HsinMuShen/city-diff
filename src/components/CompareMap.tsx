@@ -6,6 +6,7 @@ import { cityStudyArea, useI18n } from '../lib/i18n'
 import type { CityPack, CulturalAssetCollection, CulturalAssetFeature, HistoricalLayer, LostAlleyCollection, RoadFeatureCollection, RoadSummary, StitchPointCollection, UrbanTraceTool } from '../types'
 import { ChangeFilm } from './ChangeFilm'
 import { stitchPointEndpoints } from '../lib/urbanTraces'
+import { ensureSelectedRoadOnTop } from '../lib/mapLayers'
 
 interface CompareMapProps {
   city: CityPack
@@ -240,8 +241,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     for (const mapRef of [currentMapRef, historicalMapRef]) {
       const map = mapRef.current?.getMap()
       if (!map) continue
-      if (map.getLayer('selected-road-corridor')) map.moveLayer('selected-road-corridor')
-      if (map.getLayer('selected-road')) map.moveLayer('selected-road')
+      ensureSelectedRoadOnTop(map)
     }
   }, [])
 
@@ -376,6 +376,8 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           initialViewState={initialViewState}
           onMove={synchronizeHistoricalMap}
           onLoad={() => { focusSelectedRoad(); bringSelectedRoadToFront() }}
+          onStyleData={bringSelectedRoadToFront}
+          onIdle={bringSelectedRoadToFront}
           onClick={handleClick}
           onMouseMove={handleMouseMove}
           onMouseLeave={() => { setHoveredRoad(null); setHoveredCulturalAsset(null); setHoveredTrace(null) }}
@@ -406,7 +408,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       </div>
 
       <div className="map-layer historical-map" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }} aria-hidden="true">
-        <Map ref={historicalMapRef} initialViewState={initialViewState} onLoad={bringSelectedRoadToFront} mapStyle={baseMapStyle} minZoom={12.5} maxZoom={19} attributionControl={false} interactive={false} reuseMaps>
+        <Map ref={historicalMapRef} initialViewState={initialViewState} onLoad={bringSelectedRoadToFront} onStyleData={bringSelectedRoadToFront} onIdle={bringSelectedRoadToFront} mapStyle={baseMapStyle} minZoom={12.5} maxZoom={19} attributionControl={false} interactive={false} reuseMaps>
           <Source key={historicalLayer.id} id="historical-raster" type="raster" tiles={historicalTiles} tileSize={256} bounds={historicalLayer.bounds} attribution="中央研究院人社中心地理資訊科學研究專題中心">
             <Layer id="historical-raster-layer" type="raster" paint={{ 'raster-opacity': 0.88, 'raster-fade-duration': 0 }} />
           </Source>
