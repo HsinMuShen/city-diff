@@ -15,10 +15,10 @@ const initialLocale: Locale = requestedLocale === 'en' || requestedLocale === 'z
 
 const copy = {
   en: {
-    title: 'Urban Area Explorer', subtitle: 'Move the study circle to read the city at walking scale.', back: 'Map comparison', city: 'Study city', radius: 'Study radius', radiusHelp: 'Drag anywhere inside the circle, or click elsewhere on the map.', overview: 'Overview', streets: 'Streets', walking: 'Walking', heritage: 'Heritage', areaProfile: 'Area profile', roadLength: 'Street length', namedStreets: 'Named streets', mappedSegments: 'Road segments', streetHierarchy: 'Street hierarchy', streetHelp: 'Approximate line length inside the circle, grouped by the current OSM highway class.', walkingNetwork: 'Walking network', walkLength: 'Mapped walk network', pedestrianShare: 'Pedestrian-oriented share', walkHelp: 'Footways, paths, steps, pedestrian streets, and living streets as a share of mapped walking-network length.', surfaces: 'Mapped surfaces', heritageContext: 'Heritage context', registeredPlaces: 'Registered places', nearestPlace: 'Nearest place', noPlaces: 'No registered monument appears inside this radius.', sourceNote: 'Live calculations use the project’s stored OpenStreetMap and Ministry of Culture snapshots. Boundary lengths are approximate.', loading: 'Preparing local datasets…', failed: 'The explorer data could not be loaded.', mapHint: 'Drag the circle or click elsewhere', records: 'features', unknown: 'Unknown', language: 'Language', currentArea: 'Current study area', dataLayers: 'Data lenses', openRecord: 'Open official record', selected: 'inside radius', coordinates: 'Center', meters: 'm', none: 'None',
+    title: 'Urban Area Explorer', subtitle: 'Move the study circle to read the city at walking scale.', back: 'Map comparison', city: 'Study city', radius: 'Study radius', radiusHelp: 'Drag anywhere inside the circle, or click elsewhere on the map.', overview: 'Overview', streets: 'Streets', walking: 'Walking', heritage: 'Heritage', areaProfile: 'Area profile', roadLength: 'Street length', namedStreets: 'Named streets', mappedSegments: 'Road segments', streetHierarchy: 'Street hierarchy', streetMix: 'Street mix', roadTypes: 'road types', streetHelp: 'Approximate line length inside the circle, grouped by the current OSM highway class.', walkingNetwork: 'Walking network', walkLength: 'Mapped walk network', pedestrianShare: 'Pedestrian-oriented share', walkHelp: 'Footways, paths, steps, pedestrian streets, and living streets as a share of mapped walking-network length.', surfaces: 'Mapped surfaces', surfaceMix: 'Surface mix', heritageContext: 'Heritage context', registeredPlaces: 'Registered places', nearestPlace: 'Nearest place', noPlaces: 'No registered monument appears inside this radius.', sourceNote: 'Live calculations use the project’s stored OpenStreetMap and Ministry of Culture snapshots. Boundary lengths are approximate.', loading: 'Preparing local datasets…', failed: 'The explorer data could not be loaded.', mapHint: 'Drag the circle or click elsewhere', records: 'features', unknown: 'Unknown', language: 'Language', currentArea: 'Current study area', dataLayers: 'Data lenses', openRecord: 'Open official record', selected: 'inside radius', coordinates: 'Center', meters: 'm', none: 'None',
   },
   'zh-TW': {
-    title: '城市範圍探索器', subtitle: '移動研究圓，以步行尺度閱讀城市。', back: '地圖比較', city: '研究城市', radius: '研究半徑', radiusHelp: '拖曳圓內任意位置，或點擊圓外地圖。', overview: '總覽', streets: '街道', walking: '步行', heritage: '文化資產', areaProfile: '範圍概況', roadLength: '街道長度', namedStreets: '具名街道', mappedSegments: '道路圖徵', streetHierarchy: '街道層級', streetHelp: '估算研究圓內的線段長度，並依目前 OSM highway 類別分組。', walkingNetwork: '步行路網', walkLength: '已繪製步行路網', pedestrianShare: '行人導向占比', walkHelp: '步道、小徑、階梯、行人街與生活街道，占研究圓內步行路網長度的比例。', surfaces: '已標記鋪面', heritageContext: '文化資產脈絡', registeredPlaces: '登錄古蹟', nearestPlace: '最近古蹟', noPlaces: '這個半徑內沒有本資料集的登錄古蹟。', sourceNote: '即時計算使用專案保存的 OpenStreetMap 與文化部資料快照；邊界附近線長為近似值。', loading: '正在準備本地資料…', failed: '無法載入探索器資料。', mapHint: '拖曳研究圓，或點擊圓外地圖', records: '筆圖徵', unknown: '未標記', language: '語言', currentArea: '目前研究範圍', dataLayers: '資料視角', openRecord: '開啟官方紀錄', selected: '位於半徑內', coordinates: '中心座標', meters: '公尺', none: '無',
+    title: '城市範圍探索器', subtitle: '移動研究圓，以步行尺度閱讀城市。', back: '地圖比較', city: '研究城市', radius: '研究半徑', radiusHelp: '拖曳圓內任意位置，或點擊圓外地圖。', overview: '總覽', streets: '街道', walking: '步行', heritage: '文化資產', areaProfile: '範圍概況', roadLength: '街道長度', namedStreets: '具名街道', mappedSegments: '道路圖徵', streetHierarchy: '街道層級', streetMix: '街道組成', roadTypes: '種道路類型', streetHelp: '估算研究圓內的線段長度，並依目前 OSM highway 類別分組。', walkingNetwork: '步行路網', walkLength: '已繪製步行路網', pedestrianShare: '行人導向占比', walkHelp: '步道、小徑、階梯、行人街與生活街道，占研究圓內步行路網長度的比例。', surfaces: '已標記鋪面', surfaceMix: '鋪面組成', heritageContext: '文化資產脈絡', registeredPlaces: '登錄古蹟', nearestPlace: '最近古蹟', noPlaces: '這個半徑內沒有本資料集的登錄古蹟。', sourceNote: '即時計算使用專案保存的 OpenStreetMap 與文化部資料快照；邊界附近線長為近似值。', loading: '正在準備本地資料…', failed: '無法載入探索器資料。', mapHint: '拖曳研究圓，或點擊圓外地圖', records: '筆圖徵', unknown: '未標記', language: '語言', currentArea: '目前研究範圍', dataLayers: '資料視角', openRecord: '開啟官方紀錄', selected: '位於半徑內', coordinates: '中心座標', meters: '公尺', none: '無',
   },
 } as const
 
@@ -63,6 +63,51 @@ const formatPercent = (value: number) => `${Math.round(value * 100)}%`
 
 function Metric({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return <div className="explorer-metric"><span>{label}</span><strong>{value}</strong>{detail && <small>{detail}</small>}</div>
+}
+
+function DonutChart({ value, label, color }: { value: number; label: string; color: string }) {
+  const percent = Math.max(0, Math.min(100, value * 100))
+  return (
+    <div className="explorer-donut">
+      <svg viewBox="0 0 120 120" role="img" aria-label={`${label}: ${Math.round(percent)}%`}>
+        <circle className="explorer-donut-track" cx="60" cy="60" r="45" pathLength="100" />
+        <circle className="explorer-donut-value" cx="60" cy="60" r="45" pathLength="100" stroke={color} strokeDasharray={`${percent} ${100 - percent}`} />
+      </svg>
+      <div><strong>{Math.round(percent)}%</strong><span>{label}</span></div>
+    </div>
+  )
+}
+
+function BreakdownDonut({ segments, label }: { segments: Array<{ label: string; share: number }>; label: string }) {
+  let offset = 0
+  return (
+    <div className="explorer-donut breakdown">
+      <svg viewBox="0 0 120 120" role="img" aria-label={label}>
+        <circle className="explorer-donut-track" cx="60" cy="60" r="45" pathLength="100" />
+        {segments.slice(0, 7).map((segment) => {
+          const length = Math.max(0, segment.share * 100)
+          const currentOffset = offset
+          offset += length
+          return <circle key={segment.label} className="explorer-donut-value" cx="60" cy="60" r="45" pathLength="100" stroke={roadClassColors[segment.label] ?? '#625e56'} strokeDasharray={`${length} ${100 - length}`} strokeDashoffset={-currentOffset} />
+        })}
+      </svg>
+      <div><strong>{segments.length}</strong><span>{label}</span></div>
+    </div>
+  )
+}
+
+const surfaceColors: Record<string, string> = {
+  asphalt: '#373a36', paving_stones: '#9b7a3c', concrete: '#8b7064', cobblestone: '#6d5c73', ground: '#8b795e', gravel: '#657267', unknown: '#d7d3cb',
+}
+
+function SurfaceMatrix({ segments }: { segments: Array<{ label: string; share: number }> }) {
+  const colors = Array.from({ length: 100 }, (_, index) => {
+    const position = (index + .5) / 100
+    let total = 0
+    const segment = segments.find((item) => { total += item.share; return position <= total })
+    return surfaceColors[segment?.label ?? 'unknown'] ?? '#a29a8e'
+  })
+  return <div className="explorer-dot-matrix" aria-hidden="true">{colors.map((color, index) => <i key={index} style={{ background: color }} />)}</div>
 }
 
 export function ExplorerPage() {
@@ -230,43 +275,51 @@ export function ExplorerPage() {
 
           {!analysis && <div className={loadError ? 'explorer-status error' : 'explorer-status'}>{loadError ? text.failed : text.loading}</div>}
           {analysis && <div className="explorer-report">
-            <section className="explorer-section">
-              <header><span>01</span><h2>{text.areaProfile}</h2></header>
-              <div className="explorer-metric-grid">
-                <Metric label={text.roadLength} value={formatLength(analysis.roadLengthMeters)} />
-                <Metric label={text.namedStreets} value={String(analysis.namedStreetCount)} />
-                <Metric label={text.mappedSegments} value={String(analysis.roadFeatures.features.length)} detail={text.records} />
-              </div>
-              <p className="explorer-coordinate"><span>{text.coordinates}</span><code>{center[1].toFixed(5)}, {center[0].toFixed(5)}</code></p>
-            </section>
+            <div className="explorer-card-grid">
+              <section className="explorer-card overview-card wide">
+                <header><h2>{text.areaProfile}</h2><span>01</span></header>
+                <div className="explorer-metric-grid">
+                  <Metric label={text.roadLength} value={formatLength(analysis.roadLengthMeters)} />
+                  <Metric label={text.namedStreets} value={String(analysis.namedStreetCount)} />
+                  <Metric label={text.mappedSegments} value={String(analysis.roadFeatures.features.length)} detail={text.records} />
+                </div>
+                <p className="explorer-coordinate"><span>{text.coordinates}</span><code>{center[1].toFixed(5)}, {center[0].toFixed(5)}</code></p>
+              </section>
 
-            <section className={lens === 'streets' ? 'explorer-section highlighted' : 'explorer-section'}>
-              <header><span>02</span><h2>{text.streetHierarchy}</h2></header>
-              <p>{text.streetHelp}</p>
-              <div className="explorer-bars">
-                {analysis.roadClasses.slice(0, 6).map((item) => <div className="explorer-bar" key={item.label}><div><span><i style={{ background: roadClassColors[item.label] ?? '#625e56' }} />{roadClassLabel(item.label)}</span><strong>{formatLength(item.value)}</strong></div><i><b style={{ width: `${Math.max(2, item.share * 100)}%`, background: roadClassColors[item.label] ?? '#625e56' }} /></i></div>)}
-              </div>
-            </section>
+              <section className={lens === 'streets' ? 'explorer-card mix-card highlighted' : 'explorer-card mix-card'}>
+                <header><h2>{text.streetMix}</h2><span>02</span></header>
+                <BreakdownDonut segments={analysis.roadClasses} label={text.roadTypes} />
+                <div className="explorer-mini-legend">{analysis.roadClasses.slice(0, 4).map((item) => <span key={item.label}><i style={{ background: roadClassColors[item.label] ?? '#625e56' }} />{roadClassLabel(item.label)}<strong>{formatPercent(item.share)}</strong></span>)}</div>
+              </section>
 
-            <section className={lens === 'walking' ? 'explorer-section highlighted' : 'explorer-section'}>
-              <header><span>03</span><h2>{text.walkingNetwork}</h2></header>
-              <div className="explorer-dual-metric">
-                <Metric label={text.walkLength} value={formatLength(analysis.walkLengthMeters)} />
-                <Metric label={text.pedestrianShare} value={formatPercent(analysis.pedestrianShare)} />
-              </div>
-              <p>{text.walkHelp}</p>
-              <h3>{text.surfaces}</h3>
-              <div className="explorer-surface-list">{analysis.surfaces.slice(0, 4).map((item) => <span key={item.label}><i style={{ opacity: .35 + item.share * .65 }} />{item.label === 'unknown' ? text.unknown : item.label}<strong>{formatPercent(item.share)}</strong></span>)}</div>
-            </section>
+              <section className={lens === 'walking' ? 'explorer-card walking-card highlighted' : 'explorer-card walking-card'}>
+                <header><h2>{text.walkingNetwork}</h2><span>03</span></header>
+                <DonutChart value={analysis.pedestrianShare} label={text.pedestrianShare} color="#9b7a3c" />
+                <div className="explorer-card-stat"><span>{text.walkLength}</span><strong>{formatLength(analysis.walkLengthMeters)}</strong></div>
+              </section>
 
-            <section className={lens === 'heritage' ? 'explorer-section highlighted' : 'explorer-section'}>
-              <header><span>04</span><h2>{text.heritageContext}</h2></header>
-              <div className="explorer-dual-metric">
-                <Metric label={text.registeredPlaces} value={String(analysis.culturalAssets.features.length)} />
-                <Metric label={text.nearestPlace} value={analysis.nearestAssetMeters === null ? text.none : formatLength(analysis.nearestAssetMeters)} />
-              </div>
-              {analysis.culturalAssets.features.length === 0 ? <p>{text.noPlaces}</p> : <div className="explorer-place-list">{analysis.culturalAssets.features.slice(0, 5).map((asset) => <a key={asset.properties.case_id} href={asset.properties.official_url} target="_blank" rel="noreferrer"><Landmark size={14} /><span><strong>{asset.properties.name}</strong><small>{asset.properties.classification} · {asset.properties.district}</small></span><em>{text.openRecord}</em></a>)}</div>}
-            </section>
+              <section className={lens === 'streets' ? 'explorer-card hierarchy-card wide highlighted' : 'explorer-card hierarchy-card wide'}>
+                <header><div><h2>{text.streetHierarchy}</h2><p>{text.streetHelp}</p></div><span>04</span></header>
+                <div className="explorer-bars">
+                  {analysis.roadClasses.slice(0, 7).map((item) => <div className="explorer-bar" key={item.label}><div><span><i style={{ background: roadClassColors[item.label] ?? '#625e56' }} />{roadClassLabel(item.label)}</span><strong>{formatLength(item.value)}</strong></div><i><b style={{ width: `${Math.max(2, item.share * 100)}%`, background: roadClassColors[item.label] ?? '#625e56' }} /></i></div>)}
+                </div>
+              </section>
+
+              <section className="explorer-card surfaces-card">
+                <header><h2>{text.surfaceMix}</h2><span>05</span></header>
+                <SurfaceMatrix segments={analysis.surfaces} />
+                <div className="explorer-surface-list">{analysis.surfaces.slice(0, 4).map((item) => <span key={item.label}><i style={{ background: surfaceColors[item.label] ?? '#a29a8e' }} />{item.label === 'unknown' ? text.unknown : item.label}<strong>{formatPercent(item.share)}</strong></span>)}</div>
+              </section>
+
+              <section className={lens === 'heritage' ? 'explorer-card heritage-card highlighted' : 'explorer-card heritage-card'}>
+                <header><h2>{text.heritageContext}</h2><span>06</span></header>
+                <div className="explorer-dual-metric">
+                  <Metric label={text.registeredPlaces} value={String(analysis.culturalAssets.features.length)} />
+                  <Metric label={text.nearestPlace} value={analysis.nearestAssetMeters === null ? text.none : formatLength(analysis.nearestAssetMeters)} />
+                </div>
+                {analysis.culturalAssets.features.length === 0 ? <p>{text.noPlaces}</p> : <div className="explorer-place-list">{analysis.culturalAssets.features.slice(0, 3).map((asset) => <a key={asset.properties.case_id} href={asset.properties.official_url} target="_blank" rel="noreferrer"><Landmark size={14} /><span><strong>{asset.properties.name}</strong><small>{asset.properties.classification} · {asset.properties.district}</small></span></a>)}</div>}
+              </section>
+            </div>
             <footer className="explorer-note"><Ruler size={14} /><p>{text.sourceNote}</p></footer>
           </div>}
         </aside>
