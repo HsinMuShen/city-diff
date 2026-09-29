@@ -2,10 +2,11 @@ import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { cityPacks } from './cityPacks'
+import { explorerCities } from './explorerCities'
 import type { CulturalAssetCollection, CulturalAssetMetadata, RoadFeatureCollection, RoadMetadata } from '../types'
 
 describe('source data integrity', () => {
-  for (const city of cityPacks) {
+  for (const city of explorerCities) {
     const roadUrl = new URL(`../../public/data/${city.id}-roads.geojson`, import.meta.url)
     const metadataUrl = new URL(`../../public/data/${city.id}-roads.meta.json`, import.meta.url)
 
@@ -39,6 +40,18 @@ describe('source data integrity', () => {
       expect(network.features.every((feature) => feature.properties.source === 'OpenStreetMap')).toBe(true)
     })
   }
+
+  it('offers each Explorer city once and keeps its center inside its study area', () => {
+    expect(new Set(explorerCities.map((city) => city.id)).size).toBe(explorerCities.length)
+    expect(explorerCities.length).toBe(9)
+    for (const city of explorerCities) {
+      const [west, south, east, north] = city.studyBounds
+      expect(city.center[0]).toBeGreaterThanOrEqual(west)
+      expect(city.center[0]).toBeLessThanOrEqual(east)
+      expect(city.center[1]).toBeGreaterThanOrEqual(south)
+      expect(city.center[1]).toBeLessThanOrEqual(north)
+    }
+  })
 
   it('preserves unique, explicit WMTS layer identifiers and city endpoints', () => {
     const layers = cityPacks.flatMap((city) => city.historicalLayers.map((layer) => ({ city, layer })))

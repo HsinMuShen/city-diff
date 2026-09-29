@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { explorerCityConfigs as cityConfigs } from './explorer-city-configs.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const endpoints = [
@@ -18,13 +19,6 @@ const classLabels = {
   unclassified: '一般道路', living_street: '生活街道', pedestrian: '行人街道', service: '服務道路',
   footway: '步道', path: '通路', steps: '階梯', track: '產業道路',
 }
-const cityConfigs = {
-  tainan: { studyArea: '中西區與北區歷史核心', bbox: [22.982, 120.187, 23.008, 120.219] },
-  kaohsiung: { studyArea: '鹽埕—哈瑪星歷史核心', bbox: [22.614, 120.269, 22.638, 120.306] },
-  taichung: { studyArea: '中區舊城核心', bbox: [24.132, 120.668, 24.154, 120.697] },
-  taipei: { studyArea: '艋舺—大稻埕歷史核心', bbox: [25.029, 121.493, 25.067, 121.529] },
-}
-
 const requestedCities = process.argv.slice(2)
 const cityIds = requestedCities.length > 0 ? requestedCities : Object.keys(cityConfigs)
 

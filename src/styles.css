@@ -1709,8 +1709,26 @@ button.version-item:hover { color: #302e28; background: #eee9df; border-color: #
 .explorer-card.highlighted { border-color: #8b3f32; box-shadow: 0 8px 22px rgba(70, 45, 36, .12); }
 .explorer-card > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 18px; }
 .explorer-card > header h2 { margin: 0; color: #252520; font: 700 13px/1.25 'Noto Sans TC', system-ui, sans-serif; letter-spacing: -.01em; }
-.explorer-card > header > span { color: #a49d92; font: 500 8px/1 var(--mono); }
 .explorer-card > header p { max-width: 390px; margin: 5px 0 0; color: #7a746b; font-size: 10px; line-height: 1.5; }
+.explorer-card-actions { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; margin-top: -5px; }
+.explorer-card-actions > span { color: #a49d92; font: 500 8px/1 var(--mono); }
+.explorer-card-actions button {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: #716a60;
+  background: #f5f2ec;
+  border: 1px solid #e2ddd4;
+  border-radius: 50%;
+}
+.explorer-card-actions button:hover { color: #fff; background: #343832; border-color: #343832; }
+.explorer-card-actions button:focus-visible { outline: 2px solid #8b3f32; outline-offset: 2px; }
+.explorer-card-actions button:disabled { cursor: wait; opacity: .72; }
+.explorer-card-actions .spinning { animation: explorer-spin 900ms linear infinite; }
+@keyframes explorer-spin { to { transform: rotate(360deg); } }
+.explorer-export-context { margin-top: 18px; padding-top: 10px; color: #827b71; border-top: 1px solid #e3dfd7; font: 500 8px/1.4 var(--mono); letter-spacing: .03em; }
 .explorer-card .explorer-metric-grid { border-color: #e0ddd7; }
 .explorer-card .explorer-metric { padding: 15px 13px; border-color: #e0ddd7; }
 .explorer-card .explorer-metric span { min-height: 24px; font-size: 9px; }
@@ -1781,6 +1799,7 @@ button.version-item:hover { color: #302e28; background: #eee9df; border-color: #
   .explorer-card-grid { grid-template-columns: 1fr; padding: 14px; gap: 12px; }
   .explorer-card.wide { grid-column: auto; }
   .explorer-card { padding: 19px; }
+  .explorer-card-actions button { width: 34px; height: 34px; }
   .explorer-donut { width: 162px; height: 162px; }
   .explorer-section { padding: 23px 20px 25px; }
   .explorer-metric-grid { grid-template-columns: 1fr 1fr; }

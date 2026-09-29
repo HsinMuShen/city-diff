@@ -2,9 +2,14 @@ import { createHash } from 'node:crypto'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { explorerCityConfigs as cityConfigs } from './explorer-city-configs.mjs'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-const endpoint = 'https://overpass-api.de/api/interpreter'
+const endpoints = [
+  'https://overpass.private.coffee/api/interpreter',
+  'https://overpass-api.de/api/interpreter',
+  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
+]
 const acceptedClasses = new Set([
   'primary',
   'secondary',
@@ -14,29 +19,6 @@ const acceptedClasses = new Set([
   'living_street',
   'pedestrian',
 ])
-
-const cityConfigs = {
-  tainan: {
-    title: '臺南中西區與北區歷史核心具名道路中心線',
-    studyArea: '中西區與北區歷史核心',
-    bbox: [22.982, 120.187, 23.008, 120.219],
-  },
-  kaohsiung: {
-    title: '高雄鹽埕—哈瑪星歷史核心具名道路中心線',
-    studyArea: '鹽埕—哈瑪星歷史核心',
-    bbox: [22.614, 120.269, 22.638, 120.306],
-  },
-  taichung: {
-    title: '臺中中區舊城核心具名道路中心線',
-    studyArea: '中區舊城核心',
-    bbox: [24.132, 120.668, 24.154, 120.697],
-  },
-  taipei: {
-    title: '臺北艋舺—大稻埕歷史核心具名道路中心線',
-    studyArea: '艋舺—大稻埕歷史核心',
-    bbox: [25.029, 121.493, 25.067, 121.529],
-  },
-}
 
 const requestedCities = process.argv.slice(2)
 const cityIds = requestedCities.length > 0 ? requestedCities : Object.keys(cityConfigs)
@@ -51,7 +33,7 @@ async function fetchCity(cityId, config) {
   const query = `[out:json][timeout:120];
 way["highway"]["name"](${config.bbox.join(',')});
 out tags geom;`
-  const response = await requestOverpass(query, cityId)
+  const { response, endpoint } = await requestOverpass(query, cityId)
 
   if (!response.ok) {
     throw new Error(`Overpass request for ${cityId} failed: ${response.status} ${response.statusText}`)
@@ -93,7 +75,7 @@ out tags geom;`
   const metadata = {
     cityId,
     studyArea: config.studyArea,
-    title: config.title,
+    title: `${config.studyArea}具名道路中心線`,
     source: 'OpenStreetMap contributors via Overpass API',
     sourceUrl: 'https://www.openstreetmap.org/copyright',
     endpoint,
@@ -129,15 +111,27 @@ out tags geom;`
 }
 
 async function requestOverpass(query, cityId) {
-  for (let attempt = 1; attempt <= 3; attempt += 1) {
-    const response = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
-      body: new URLSearchParams({ data: query }),
-    })
-    if (response.ok || attempt === 3) return response
-    console.warn(`${cityId}: Overpass returned ${response.status}; retrying (${attempt}/3)`)
-    await new Promise((resolveDelay) => setTimeout(resolveDelay, attempt * 1500))
+  let lastError
+  for (const endpoint of endpoints) {
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        const response = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+            'User-Agent': 'City-Diff-Urban-Research-Prototype/0.1',
+          },
+          body: new URLSearchParams({ data: query }),
+          signal: AbortSignal.timeout(150_000),
+        })
+        if (response.ok) return { response, endpoint }
+        lastError = new Error(`${endpoint} returned ${response.status}`)
+      } catch (error) {
+        lastError = error
+      }
+      console.warn(`${cityId}: ${endpoint} failed; retrying (${attempt}/2)`)
+      await new Promise((resolveDelay) => setTimeout(resolveDelay, attempt * 1800))
+    }
   }
-  throw new Error(`Overpass request for ${cityId} did not return a response`)
+  throw new Error(`Overpass request for ${cityId} failed across all configured public instances`, { cause: lastError })
 }

@@ -1,0 +1,47 @@
+{
+  "cityId": "new-taipei",
+  "studyArea": "板橋舊城與府中核心",
+  "title": "板橋舊城與府中核心 OSM 步行路網分析快照",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-09-29T15:19:52.753421Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "bbox": [
+    24.997,
+    121.444,
+    25.026,
+    121.476
+  ],
+  "filters": {
+    "requiredTags": [
+      "highway"
+    ],
+    "excludedAccess": [
+      "private"
+    ],
+    "acceptedHighwayClasses": [
+      "footway",
+      "living_street",
+      "path",
+      "pedestrian",
+      "primary",
+      "residential",
+      "secondary",
+      "service",
+      "steps",
+      "tertiary",
+      "track",
+      "unclassified"
+    ]
+  },
+  "featureCount": 3211,
+  "sha256": "8f3b382374852cd8ffc74c6b4916fbf970648c6924fb4e48e67b4872b318dde2",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Unnamed ways receive a generated display label containing their OSM way ID; the label is not a street name.",
+    "Ways are road centreline segments, not legal road boundaries or proof of public access.",
+    "The snapshot covers the named study area, not the entire modern municipality."
+  ]
+}

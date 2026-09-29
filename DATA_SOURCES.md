@@ -24,7 +24,7 @@ These are georeferenced raster tiles, not queryable parcel polygons. A visible l
 ## 2. Present-day road centrelines
 
 - Provider: OpenStreetMap contributors
-- Access: Overpass API
+- Access: Overpass API; the 2026-09-28 snapshots for the five added Explorer cities were clipped locally from the Geofabrik Taiwan extract when public Overpass instances were unavailable.
 - License: Open Database License (ODbL)
 - Attribution: <https://www.openstreetmap.org/copyright>
 - Filter: ways with both `highway` and `name`; accepted road classes are recorded in every metadata file.
@@ -35,12 +35,17 @@ Study bboxes are deliberately limited to historic cores:
 - 高雄: south 22.614, west 120.269, north 22.638, east 120.306
 - 臺中: south 24.132, west 120.668, north 24.154, east 120.697
 - 臺北: south 25.029, west 121.493, north 25.067, east 121.529
+- 新北: south 24.997, west 121.444, north 25.026, east 121.476
+- 桃園: south 24.981, west 121.294, north 25.011, east 121.329
+- 新竹: south 24.792, west 120.952, north 24.818, east 120.984
+- 嘉義: south 23.465, west 120.432, north 23.494, east 120.466
+- 基隆: south 25.116, west 121.724, north 25.145, east 121.758
 
 Each generated metadata file records the city, study area, extraction timestamp, OSM base timestamp, filter, feature count and SHA-256. OSM ways are contributor-maintained centreline segments. They are not road ownership polygons, legal rights-of-way, or evidence of construction dates.
 
 ### Analytical walk-network snapshots
 
-`npm run data:network` generates a second OSM snapshot for each City Pack. Unlike the road-search snapshot, it includes named and unnamed ways in the following classes: `primary`, `secondary`, `tertiary`, `residential`, `unclassified`, `living_street`, `pedestrian`, `service`, `footway`, `path`, `steps`, and `track`. Ways explicitly tagged `access=private` are excluded. Unnamed features receive a generated interface label containing the OSM way ID; this is not presented as an official street name.
+`npm run data:network` generates a second OSM snapshot for each Explorer study area. Unlike the road-search snapshot, it includes named and unnamed ways in the following classes: `primary`, `secondary`, `tertiary`, `residential`, `unclassified`, `living_street`, `pedestrian`, `service`, `footway`, `path`, `steps`, and `track`. Ways explicitly tagged `access=private` are excluded. Unnamed features receive a generated interface label containing the OSM way ID; this is not presented as an official street name.
 
 The **巷弄痕跡候選** prototype marks a morphology candidate when an OSM network endpoint:
 

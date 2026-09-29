@@ -37,6 +37,20 @@ export interface CityPack {
   historicalLayers: readonly HistoricalLayer[]
 }
 
+export interface ExplorerCity {
+  id: string
+  name: string
+  nameEn: string
+  studyArea: string
+  studyAreaEn: string
+  center: [number, number]
+  zoom: number
+  studyBounds: [number, number, number, number]
+  roadDataUrl: string
+  walkNetworkDataUrl: string
+  comparisonCityId?: CityId
+}
+
 export type Locale = 'zh-TW' | 'en'
 
 export interface RoadProperties {
@@ -54,7 +68,7 @@ export type RoadFeature = Feature<LineString, RoadProperties>
 export type RoadFeatureCollection = FeatureCollection<LineString, RoadProperties>
 
 export interface RoadMetadata {
-  cityId: CityId
+  cityId: string
   studyArea: string
   title: string
   source: string
