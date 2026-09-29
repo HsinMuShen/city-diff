@@ -1,4 +1,4 @@
-import { BookOpen, ChevronDown, GitCompareArrows, Languages } from 'lucide-react'
+import { BookOpen, ChevronDown, Compass, GitCompareArrows, Languages } from 'lucide-react'
 import { cityName, cityQuestion, useI18n } from '../lib/i18n'
 import type { CityPack, Locale } from '../types'
 
@@ -28,6 +28,7 @@ export function Header({ cities, activeCity, locale, onCityChange, onLocaleChang
       </label>
       <div className="research-question"><p>{cityQuestion(activeCity, locale)}</p></div>
       <div className="header-actions">
+        <a className="explorer-link" href={`/explorer?city=${activeCity.id}&lang=${locale}`}><Compass size={15} /><span>{t('explorer')}</span></a>
         <button className="language-switcher" onClick={() => onLocaleChange(locale === 'en' ? 'zh-TW' : 'en')} aria-label={`${t('language')}: ${locale === 'en' ? '中文' : 'English'}`}>
           <Languages size={15} />
           <span>{locale === 'en' ? '中' : 'EN'}</span>
