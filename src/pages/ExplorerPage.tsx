@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import Map, { Layer, Marker, NavigationControl, ScaleControl, Source, type MapLayerMouseEvent, type MapRef } from 'react-map-gl/maplibre'
-import type { ExpressionSpecification } from 'maplibre-gl'
-import { ArrowLeft, ChevronDown, CircleDot, Compass, Footprints, Languages, Landmark, MapPinned, Route, Ruler } from 'lucide-react'
+import Map, { Layer, NavigationControl, ScaleControl, Source, type MapRef } from 'react-map-gl/maplibre'
+import type { ExpressionSpecification, MapLayerMouseEvent, MapLayerTouchEvent } from 'maplibre-gl'
+import { ArrowLeft, ChevronDown, Compass, Footprints, Languages, Landmark, MapPinned, Route, Ruler } from 'lucide-react'
 import { cityPacks, findCityPack } from '../data/cityPacks'
-import { analyzeExplorerArea, createRadiusCircle, type ExplorerLens } from '../lib/explorer'
+import { analyzeExplorerArea, createRadiusCircle, pointDistanceMeters, type ExplorerLens } from '../lib/explorer'
 import type { CityPack, CulturalAssetCollection, Locale, RoadFeatureCollection } from '../types'
 
 const baseMapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
@@ -15,10 +15,10 @@ const initialLocale: Locale = requestedLocale === 'en' || requestedLocale === 'z
 
 const copy = {
   en: {
-    title: 'Urban Area Explorer', subtitle: 'Move the study circle to read the city at walking scale.', back: 'Map comparison', city: 'Study city', radius: 'Study radius', radiusHelp: 'Drag the center point or click anywhere on the map.', overview: 'Overview', streets: 'Streets', walking: 'Walking', heritage: 'Heritage', areaProfile: 'Area profile', roadLength: 'Street length', namedStreets: 'Named streets', mappedSegments: 'Road segments', streetHierarchy: 'Street hierarchy', streetHelp: 'Approximate line length inside the circle, grouped by the current OSM highway class.', walkingNetwork: 'Walking network', walkLength: 'Mapped walk network', pedestrianShare: 'Pedestrian-oriented share', walkHelp: 'Footways, paths, steps, pedestrian streets, and living streets as a share of mapped walking-network length.', surfaces: 'Mapped surfaces', heritageContext: 'Heritage context', registeredPlaces: 'Registered places', nearestPlace: 'Nearest place', noPlaces: 'No registered monument appears inside this radius.', sourceNote: 'Live calculations use the project’s stored OpenStreetMap and Ministry of Culture snapshots. Boundary lengths are approximate.', loading: 'Preparing local datasets…', failed: 'The explorer data could not be loaded.', mapHint: 'Click the map or drag the center point', records: 'features', unknown: 'Unknown', language: 'Language', currentArea: 'Current study area', dataLayers: 'Data lenses', openRecord: 'Open official record', selected: 'inside radius', coordinates: 'Center', meters: 'm', none: 'None',
+    title: 'Urban Area Explorer', subtitle: 'Move the study circle to read the city at walking scale.', back: 'Map comparison', city: 'Study city', radius: 'Study radius', radiusHelp: 'Drag anywhere inside the circle, or click elsewhere on the map.', overview: 'Overview', streets: 'Streets', walking: 'Walking', heritage: 'Heritage', areaProfile: 'Area profile', roadLength: 'Street length', namedStreets: 'Named streets', mappedSegments: 'Road segments', streetHierarchy: 'Street hierarchy', streetHelp: 'Approximate line length inside the circle, grouped by the current OSM highway class.', walkingNetwork: 'Walking network', walkLength: 'Mapped walk network', pedestrianShare: 'Pedestrian-oriented share', walkHelp: 'Footways, paths, steps, pedestrian streets, and living streets as a share of mapped walking-network length.', surfaces: 'Mapped surfaces', heritageContext: 'Heritage context', registeredPlaces: 'Registered places', nearestPlace: 'Nearest place', noPlaces: 'No registered monument appears inside this radius.', sourceNote: 'Live calculations use the project’s stored OpenStreetMap and Ministry of Culture snapshots. Boundary lengths are approximate.', loading: 'Preparing local datasets…', failed: 'The explorer data could not be loaded.', mapHint: 'Drag the circle or click elsewhere', records: 'features', unknown: 'Unknown', language: 'Language', currentArea: 'Current study area', dataLayers: 'Data lenses', openRecord: 'Open official record', selected: 'inside radius', coordinates: 'Center', meters: 'm', none: 'None',
   },
   'zh-TW': {
-    title: '城市範圍探索器', subtitle: '移動研究圓，以步行尺度閱讀城市。', back: '地圖比較', city: '研究城市', radius: '研究半徑', radiusHelp: '拖曳中心點，或點擊地圖任意位置。', overview: '總覽', streets: '街道', walking: '步行', heritage: '文化資產', areaProfile: '範圍概況', roadLength: '街道長度', namedStreets: '具名街道', mappedSegments: '道路圖徵', streetHierarchy: '街道層級', streetHelp: '估算研究圓內的線段長度，並依目前 OSM highway 類別分組。', walkingNetwork: '步行路網', walkLength: '已繪製步行路網', pedestrianShare: '行人導向占比', walkHelp: '步道、小徑、階梯、行人街與生活街道，占研究圓內步行路網長度的比例。', surfaces: '已標記鋪面', heritageContext: '文化資產脈絡', registeredPlaces: '登錄古蹟', nearestPlace: '最近古蹟', noPlaces: '這個半徑內沒有本資料集的登錄古蹟。', sourceNote: '即時計算使用專案保存的 OpenStreetMap 與文化部資料快照；邊界附近線長為近似值。', loading: '正在準備本地資料…', failed: '無法載入探索器資料。', mapHint: '點擊地圖，或拖曳中心點', records: '筆圖徵', unknown: '未標記', language: '語言', currentArea: '目前研究範圍', dataLayers: '資料視角', openRecord: '開啟官方紀錄', selected: '位於半徑內', coordinates: '中心座標', meters: '公尺', none: '無',
+    title: '城市範圍探索器', subtitle: '移動研究圓，以步行尺度閱讀城市。', back: '地圖比較', city: '研究城市', radius: '研究半徑', radiusHelp: '拖曳圓內任意位置，或點擊圓外地圖。', overview: '總覽', streets: '街道', walking: '步行', heritage: '文化資產', areaProfile: '範圍概況', roadLength: '街道長度', namedStreets: '具名街道', mappedSegments: '道路圖徵', streetHierarchy: '街道層級', streetHelp: '估算研究圓內的線段長度，並依目前 OSM highway 類別分組。', walkingNetwork: '步行路網', walkLength: '已繪製步行路網', pedestrianShare: '行人導向占比', walkHelp: '步道、小徑、階梯、行人街與生活街道，占研究圓內步行路網長度的比例。', surfaces: '已標記鋪面', heritageContext: '文化資產脈絡', registeredPlaces: '登錄古蹟', nearestPlace: '最近古蹟', noPlaces: '這個半徑內沒有本資料集的登錄古蹟。', sourceNote: '即時計算使用專案保存的 OpenStreetMap 與文化部資料快照；邊界附近線長為近似值。', loading: '正在準備本地資料…', failed: '無法載入探索器資料。', mapHint: '拖曳研究圓，或點擊圓外地圖', records: '筆圖徵', unknown: '未標記', language: '語言', currentArea: '目前研究範圍', dataLayers: '資料視角', openRecord: '開啟官方紀錄', selected: '位於半徑內', coordinates: '中心座標', meters: '公尺', none: '無',
   },
 } as const
 
@@ -67,6 +67,7 @@ function Metric({ label, value, detail }: { label: string; value: string; detail
 
 export function ExplorerPage() {
   const mapRef = useRef<MapRef>(null)
+  const circleDragRef = useRef<{ pointer: [number, number]; center: [number, number] } | null>(null)
   const [locale, setLocale] = useState<Locale>(initialLocale)
   const [city, setCity] = useState<CityPack>(() => findCityPack(parameters.get('city')))
   const [center, setCenter] = useState<[number, number]>(city.center)
@@ -76,6 +77,8 @@ export function ExplorerPage() {
   const [walkNetwork, setWalkNetwork] = useState<RoadFeatureCollection | null>(null)
   const [assets, setAssets] = useState<CulturalAssetCollection | null>(null)
   const [loadError, setLoadError] = useState(false)
+  const [circleDragging, setCircleDragging] = useState(false)
+  const [circleHovered, setCircleHovered] = useState(false)
   const text = copy[locale]
 
   useEffect(() => {
@@ -127,7 +130,32 @@ export function ExplorerPage() {
     updateUrl(city, nextLocale)
   }
 
-  const moveCenter = (event: MapLayerMouseEvent) => setCenter([event.lngLat.lng, event.lngLat.lat])
+  const isCircleEvent = (event: MapLayerMouseEvent | MapLayerTouchEvent) => pointDistanceMeters([event.lngLat.lng, event.lngLat.lat], center) <= radius
+  const moveCenter = (event: MapLayerMouseEvent) => {
+    if (!isCircleEvent(event)) setCenter([event.lngLat.lng, event.lngLat.lat])
+  }
+  const startCircleDrag = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
+    if (!isCircleEvent(event)) return
+    event.preventDefault()
+    circleDragRef.current = { pointer: [event.lngLat.lng, event.lngLat.lat], center }
+    setCircleDragging(true)
+  }
+  const moveCircle = (event: MapLayerMouseEvent | MapLayerTouchEvent) => {
+    if (!circleDragRef.current) {
+      if ('buttons' in event.originalEvent) setCircleHovered(isCircleEvent(event))
+      return
+    }
+    event.preventDefault()
+    const drag = circleDragRef.current
+    setCenter([
+      drag.center[0] + event.lngLat.lng - drag.pointer[0],
+      drag.center[1] + event.lngLat.lat - drag.pointer[1],
+    ])
+  }
+  const endCircleDrag = () => {
+    circleDragRef.current = null
+    setCircleDragging(false)
+  }
   const roadClassLabel = (value: string) => roadClassNames[value]?.[locale === 'en' ? 0 : 1] ?? value
 
   return (
@@ -148,8 +176,16 @@ export function ExplorerPage() {
             attributionControl={false}
             minZoom={12}
             maxZoom={19}
-            cursor="crosshair"
+            cursor={circleDragging ? 'grabbing' : circleHovered ? 'grab' : 'crosshair'}
             onClick={moveCenter}
+            onMouseDown={startCircleDrag}
+            onMouseMove={moveCircle}
+            onMouseUp={endCircleDrag}
+            onMouseLeave={() => { endCircleDrag(); setCircleHovered(false) }}
+            onTouchStart={startCircleDrag}
+            onTouchMove={moveCircle}
+            onTouchEnd={endCircleDrag}
+            onTouchCancel={endCircleDrag}
           >
             <NavigationControl position="bottom-right" showCompass={false} />
             <ScaleControl position="bottom-left" unit="metric" />
@@ -160,9 +196,6 @@ export function ExplorerPage() {
             </Source>
             {displayedLines && <Source id="explorer-selected-lines" type="geojson" data={displayedLines}><Layer id="explorer-selected-lines-layer" type="line" paint={{ 'line-color': showStreetHierarchy ? streetColorExpression : lineColor, 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.2, 17, 3.2] }} /></Source>}
             {analysis && <Source id="explorer-assets" type="geojson" data={analysis.culturalAssets}><Layer id="explorer-assets-layer" type="circle" paint={{ 'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 4, 17, 7], 'circle-color': '#9b7a3c', 'circle-stroke-color': '#fbfaf6', 'circle-stroke-width': 2 }} /></Source>}
-            <Marker longitude={center[0]} latitude={center[1]} draggable anchor="center" onDrag={(event) => setCenter([event.lngLat.lng, event.lngLat.lat])} onDragEnd={(event) => setCenter([event.lngLat.lng, event.lngLat.lat])}>
-              <div className="explorer-center-marker" role="img" aria-label={text.mapHint}><CircleDot size={22} /></div>
-            </Marker>
           </Map>
           <div className="explorer-map-key">
             {showStreetHierarchy

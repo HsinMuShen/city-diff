@@ -1618,19 +1618,6 @@ button.version-item:hover { color: #302e28; background: #eee9df; border-color: #
 .explorer-map .maplibregl-map { width: 100%; height: 100%; }
 .explorer-map .maplibregl-ctrl-group { border: 1px solid #bdb4a6; border-radius: 4px; box-shadow: 0 5px 18px rgba(43, 38, 31, .12); }
 .explorer-map .maplibregl-ctrl-scale { margin: 0 0 23px 14px; color: #5f5a51; background: rgba(251, 250, 246, .88); border-color: #7f776c; font: 500 8px var(--mono); }
-.explorer-center-marker {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-items: center;
-  color: #fbfaf6;
-  background: var(--explorer-accent);
-  border: 4px solid rgba(251, 250, 246, .92);
-  border-radius: 50%;
-  box-shadow: 0 6px 20px rgba(60, 42, 34, .28);
-  cursor: grab;
-}
-.explorer-center-marker:active { cursor: grabbing; }
 .explorer-map-key,
 .explorer-map-hint {
   position: absolute;
