@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Map, { Layer, Marker, NavigationControl, ScaleControl, Source, type MapLayerMouseEvent, type MapRef } from 'react-map-gl/maplibre'
+import type { ExpressionSpecification } from 'maplibre-gl'
 import { ArrowLeft, ChevronDown, CircleDot, Compass, Footprints, Languages, Landmark, MapPinned, Route, Ruler } from 'lucide-react'
 import { cityPacks, findCityPack } from '../data/cityPacks'
 import { analyzeExplorerArea, createRadiusCircle, type ExplorerLens } from '../lib/explorer'
@@ -26,6 +27,36 @@ const roadClassNames: Record<string, [string, string]> = {
   residential: ['Residential', '住宅道路'], living_street: ['Living street', '生活街道'], pedestrian: ['Pedestrian', '行人街道'],
   unclassified: ['Unclassified', '一般道路'], service: ['Service', '服務道路'], footway: ['Footway', '步道'], path: ['Path', '小徑'], steps: ['Steps', '階梯'],
 }
+
+const roadClassColors: Record<string, string> = {
+  primary: '#7d342b',
+  secondary: '#a9583f',
+  tertiary: '#9b7a3c',
+  residential: '#536b5c',
+  living_street: '#4f7077',
+  pedestrian: '#6d5c73',
+  unclassified: '#81786b',
+  service: '#8d806d',
+  footway: '#55727b',
+  path: '#6e7654',
+  steps: '#765f59',
+}
+
+const streetColorExpression: ExpressionSpecification = [
+  'match', ['get', 'highway'],
+  'primary', roadClassColors.primary,
+  'secondary', roadClassColors.secondary,
+  'tertiary', roadClassColors.tertiary,
+  'residential', roadClassColors.residential,
+  'living_street', roadClassColors.living_street,
+  'pedestrian', roadClassColors.pedestrian,
+  'unclassified', roadClassColors.unclassified,
+  'service', roadClassColors.service,
+  'footway', roadClassColors.footway,
+  'path', roadClassColors.path,
+  'steps', roadClassColors.steps,
+  '#625e56',
+]
 
 const formatLength = (meters: number) => meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`
@@ -76,6 +107,7 @@ export function ExplorerPage() {
   const radiusCircle = useMemo(() => createRadiusCircle(center, radius), [center, radius])
   const displayedLines = lens === 'walking' ? analysis?.walkFeatures : analysis?.roadFeatures
   const lineColor = lens === 'walking' ? '#9b7a3c' : lens === 'heritage' ? '#6d665b' : '#8b3f32'
+  const showStreetHierarchy = lens === 'overview' || lens === 'streets'
 
   const updateUrl = (nextCity = city, nextLocale = locale) => {
     const next = new URLSearchParams({ city: nextCity.id, lang: nextLocale })
@@ -126,13 +158,19 @@ export function ExplorerPage() {
               <Layer id="explorer-radius-fill" type="fill" paint={{ 'fill-color': '#d6c5a1', 'fill-opacity': .17 }} />
               <Layer id="explorer-radius-line" type="line" paint={{ 'line-color': '#343832', 'line-width': 1.5, 'line-dasharray': [3, 2] }} />
             </Source>
-            {displayedLines && <Source id="explorer-selected-lines" type="geojson" data={displayedLines}><Layer id="explorer-selected-lines-layer" type="line" paint={{ 'line-color': lineColor, 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.2, 17, 3.2] }} /></Source>}
+            {displayedLines && <Source id="explorer-selected-lines" type="geojson" data={displayedLines}><Layer id="explorer-selected-lines-layer" type="line" paint={{ 'line-color': showStreetHierarchy ? streetColorExpression : lineColor, 'line-opacity': .9, 'line-width': ['interpolate', ['linear'], ['zoom'], 12, 1.2, 17, 3.2] }} /></Source>}
             {analysis && <Source id="explorer-assets" type="geojson" data={analysis.culturalAssets}><Layer id="explorer-assets-layer" type="circle" paint={{ 'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 4, 17, 7], 'circle-color': '#9b7a3c', 'circle-stroke-color': '#fbfaf6', 'circle-stroke-width': 2 }} /></Source>}
-            <Marker longitude={center[0]} latitude={center[1]} draggable anchor="center" onDragEnd={(event) => setCenter([event.lngLat.lng, event.lngLat.lat])}>
+            <Marker longitude={center[0]} latitude={center[1]} draggable anchor="center" onDrag={(event) => setCenter([event.lngLat.lng, event.lngLat.lat])} onDragEnd={(event) => setCenter([event.lngLat.lng, event.lngLat.lat])}>
               <div className="explorer-center-marker" role="img" aria-label={text.mapHint}><CircleDot size={22} /></div>
             </Marker>
           </Map>
-          <div className="explorer-map-key"><span style={{ background: lineColor }} />{lens === 'walking' ? text.walking : lens === 'heritage' ? text.heritage : text.streets}<small>{analysis ? `${displayedLines?.features.length ?? 0} ${text.selected}` : text.loading}</small></div>
+          <div className="explorer-map-key">
+            {showStreetHierarchy
+              ? <span className="explorer-map-key-swatches">{analysis?.roadClasses.slice(0, 4).map((item) => <i key={item.label} style={{ background: roadClassColors[item.label] ?? '#625e56' }} />)}</span>
+              : <span style={{ background: lineColor }} />}
+            {lens === 'walking' ? text.walking : lens === 'heritage' ? text.heritage : text.streets}
+            <small>{analysis ? `${displayedLines?.features.length ?? 0} ${text.selected}` : text.loading}</small>
+          </div>
           <div className="explorer-map-hint"><MapPinned size={15} />{text.mapHint}</div>
           <div className="explorer-map-attribution"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">© OpenStreetMap contributors</a><span>Basemap © CARTO</span></div>
         </section>
@@ -173,7 +211,7 @@ export function ExplorerPage() {
               <header><span>02</span><h2>{text.streetHierarchy}</h2></header>
               <p>{text.streetHelp}</p>
               <div className="explorer-bars">
-                {analysis.roadClasses.slice(0, 6).map((item) => <div className="explorer-bar" key={item.label}><div><span>{roadClassLabel(item.label)}</span><strong>{formatLength(item.value)}</strong></div><i><b style={{ width: `${Math.max(2, item.share * 100)}%` }} /></i></div>)}
+                {analysis.roadClasses.slice(0, 6).map((item) => <div className="explorer-bar" key={item.label}><div><span><i style={{ background: roadClassColors[item.label] ?? '#625e56' }} />{roadClassLabel(item.label)}</span><strong>{formatLength(item.value)}</strong></div><i><b style={{ width: `${Math.max(2, item.share * 100)}%`, background: roadClassColors[item.label] ?? '#625e56' }} /></i></div>)}
               </div>
             </section>
 
