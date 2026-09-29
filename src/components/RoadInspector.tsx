@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react'
 import type { CityPack, CulturalAssetMetadata, HistoricalLayer, LostAlleyCandidate, NearbyCulturalAsset, RoadMetadata, RoadSummary, StitchPointCandidate, UrbanTraceTool } from '../types'
 import { roadClassLabel } from '../lib/geo'
 import { cityName, layerTitle, useI18n } from '../lib/i18n'
+import { CandidateReview } from './CandidateReview'
 
 interface RoadInspectorProps {
   city: CityPack
@@ -45,6 +46,7 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
       .slice(0, 30)
   }, [allRoads, normalizedQuery, suggestedRoads])
   const selectedStitch = useMemo(() => stitchPointCandidates.find((candidate) => candidate.properties.id === selectedTraceCandidateId) ?? null, [selectedTraceCandidateId, stitchPointCandidates])
+  const selectedAlley = useMemo(() => lostAlleyCandidates.find((candidate) => candidate.properties.id === selectedTraceCandidateId) ?? null, [selectedTraceCandidateId, lostAlleyCandidates])
   const disconnectedStitches = stitchPointCandidates.filter((candidate) => candidate.properties.network_distance_m === null).length
   const date = (value: string | null | undefined) => formatDate(value, locale, t('sourceUnknown'))
   const oneway = selectedRoad?.oneway === true ? t('oneWay') : selectedRoad?.oneway === false ? t('notOneWay') : t('unknown')
@@ -197,6 +199,9 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
           <footer><AlertTriangle size={13} /><span>{t('stitchWarning', { date: date(walkNetworkMetadata?.osmDataTimestamp) })}</span></footer>
         </section>
       )}
+
+      {walkNetworkMetadata && activeTool === 'lost-alleys' && selectedAlley && <CandidateReview key={`${city.id}:lost-alleys:${selectedRoad.name}:${selectedAlley.properties.id}`} city={city} roadName={selectedRoad.name} candidate={selectedAlley} candidateType="lost-alleys" metadata={walkNetworkMetadata} historicalLayer={activeLayer} />}
+      {walkNetworkMetadata && activeTool === 'stitch-points' && selectedStitch && <CandidateReview key={`${city.id}:stitch-points:${selectedRoad.name}:${selectedStitch.properties.id}`} city={city} roadName={selectedRoad.name} candidate={selectedStitch} candidateType="stitch-points" metadata={walkNetworkMetadata} historicalLayer={activeLayer} />}
 
       <details className="provenance-disclosure">
         <summary><span>{t('dataLimits')}</span><ChevronDown size={16} /></summary>

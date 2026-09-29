@@ -36,7 +36,7 @@ const roadLayer: LineLayerSpecification = {
   type: 'line',
   source: 'osm-roads',
   paint: {
-    'line-color': '#315e50',
+    'line-color': '#536b5c',
     'line-opacity': 0.56,
     'line-width': ['interpolate', ['linear'], ['zoom'], 12, 0.6, 16, 1.4, 19, 3],
   },
@@ -58,8 +58,8 @@ const culturalAssetLayer: CircleLayerSpecification = {
   source: 'cultural-assets',
   paint: {
     'circle-radius': ['interpolate', ['linear'], ['zoom'], 12, 3, 16, 5, 19, 7],
-    'circle-color': '#a86f13',
-    'circle-stroke-color': '#fff9e8',
+    'circle-color': '#9b7a3c',
+    'circle-stroke-color': '#fbf7ed',
     'circle-stroke-width': 1.5,
     'circle-opacity': 0.9,
   },
@@ -82,12 +82,12 @@ function SelectedRoadLayers({ selectedRoadData }: { selectedRoadData: RoadFeatur
       <Layer
         id="selected-road-corridor"
         type="line"
-        paint={{ 'line-color': '#ff5a37', 'line-opacity': 0.2, 'line-width': 24, 'line-blur': 4 }}
+        paint={{ 'line-color': '#8b3f32', 'line-opacity': 0.18, 'line-width': 24, 'line-blur': 4 }}
       />
       <Layer
         id="selected-road"
         type="line"
-        paint={{ 'line-color': '#ff4e28', 'line-width': 4, 'line-opacity': 1 }}
+        paint={{ 'line-color': '#8b3f32', 'line-width': 4, 'line-opacity': 1 }}
       />
     </Source>
   )
@@ -101,7 +101,7 @@ function RoadSources({ roads, interactive = false, hoveredName = null }: { roads
     <Source id="osm-roads" type="geojson" data={roads} promoteId="osm_id">
       <Layer {...roadLayer} />
       {interactive && <Layer {...hitLayer} />}
-      {interactive && <Layer id="hovered-road" type="line" filter={hoverFilter} paint={{ 'line-color': '#ff6a45', 'line-width': 5, 'line-opacity': 0.95 }} />}
+      {interactive && <Layer id="hovered-road" type="line" filter={hoverFilter} paint={{ 'line-color': '#a65442', 'line-width': 5, 'line-opacity': 0.95 }} />}
     </Source>
   )
 }
@@ -124,8 +124,8 @@ function CulturalAssetLayers({
     <Source id="cultural-assets" type="geojson" data={assets} promoteId="case_id">
       <Layer {...culturalAssetLayer} />
       {interactive && <Layer {...culturalAssetHitLayer} />}
-      {interactive && <Layer id="hovered-cultural-asset" type="circle" filter={hoverFilter} paint={{ 'circle-radius': 9, 'circle-color': '#f5c45d', 'circle-stroke-color': '#3e2e10', 'circle-stroke-width': 2 }} />}
-      <Layer id="selected-cultural-asset" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 11, 'circle-color': '#ff5a37', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 3 }} />
+      {interactive && <Layer id="hovered-cultural-asset" type="circle" filter={hoverFilter} paint={{ 'circle-radius': 9, 'circle-color': '#c2a468', 'circle-stroke-color': '#443820', 'circle-stroke-width': 2 }} />}
+      <Layer id="selected-cultural-asset" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 11, 'circle-color': '#8b3f32', 'circle-stroke-color': '#ffffff', 'circle-stroke-width': 3 }} />
     </Source>
   )
 }
@@ -152,10 +152,10 @@ function UrbanTraceLayers({
   if (activeTool === 'lost-alleys') {
     return (
       <Source id="lost-alley-candidates" type="geojson" data={lostAlleys} promoteId="id">
-        <Layer id="lost-alley-points" type="circle" paint={{ 'circle-radius': 6, 'circle-color': '#167b89', 'circle-stroke-color': '#e9ffff', 'circle-stroke-width': 2 }} />
+        <Layer id="lost-alley-points" type="circle" paint={{ 'circle-radius': 6, 'circle-color': '#466a72', 'circle-stroke-color': '#f3f5f1', 'circle-stroke-width': 2 }} />
         {interactive && <Layer id="lost-alley-hit" type="circle" paint={{ 'circle-radius': 15, 'circle-color': 'rgba(0,0,0,.01)' }} />}
-        {interactive && <Layer id="hovered-lost-alley" type="circle" filter={hoveredFilter} paint={{ 'circle-radius': 10, 'circle-color': '#55d2df', 'circle-stroke-color': '#153f45', 'circle-stroke-width': 2 }} />}
-        <Layer id="selected-lost-alley" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 11, 'circle-color': '#ff5430', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 }} />
+        {interactive && <Layer id="hovered-lost-alley" type="circle" filter={hoveredFilter} paint={{ 'circle-radius': 10, 'circle-color': '#82a1a5', 'circle-stroke-color': '#2d474c', 'circle-stroke-width': 2 }} />}
+        <Layer id="selected-lost-alley" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 11, 'circle-color': '#8b3f32', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 }} />
       </Source>
     )
   }
@@ -165,14 +165,14 @@ function UrbanTraceLayers({
       <>
         <Source id="stitch-point-candidates" type="geojson" data={stitchPoints} promoteId="id">
           <Layer id="stitch-point-casing" type="line" paint={{ 'line-color': '#ffffff', 'line-width': 8, 'line-opacity': 0.88 }} />
-          <Layer id="stitch-point-lines" type="line" paint={{ 'line-color': '#7441ad', 'line-width': 4.5, 'line-dasharray': [1.2, 1.2], 'line-opacity': 1 }} />
+          <Layer id="stitch-point-lines" type="line" paint={{ 'line-color': '#6d5c73', 'line-width': 4.5, 'line-dasharray': [1.2, 1.2], 'line-opacity': 1 }} />
           {interactive && <Layer id="stitch-point-hit" type="line" paint={{ 'line-color': 'rgba(0,0,0,.01)', 'line-width': 24 }} />}
-          {interactive && <Layer id="hovered-stitch-point" type="line" filter={hoveredFilter} paint={{ 'line-color': '#d0a8ff', 'line-width': 9 }} />}
-          <Layer id="selected-stitch-point" type="line" filter={selectedFilter} paint={{ 'line-color': '#ff5430', 'line-width': 8 }} />
+          {interactive && <Layer id="hovered-stitch-point" type="line" filter={hoveredFilter} paint={{ 'line-color': '#a899ad', 'line-width': 9 }} />}
+          <Layer id="selected-stitch-point" type="line" filter={selectedFilter} paint={{ 'line-color': '#8b3f32', 'line-width': 8 }} />
         </Source>
         <Source id="stitch-point-endpoints" type="geojson" data={stitchEndpoints}>
-          <Layer id="stitch-point-ends" type="circle" paint={{ 'circle-radius': 6, 'circle-color': '#7441ad', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2.5 }} />
-          <Layer id="selected-stitch-point-ends" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 8, 'circle-color': '#ff5430', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 }} />
+          <Layer id="stitch-point-ends" type="circle" paint={{ 'circle-radius': 6, 'circle-color': '#6d5c73', 'circle-stroke-color': '#fff', 'circle-stroke-width': 2.5 }} />
+          <Layer id="selected-stitch-point-ends" type="circle" filter={selectedFilter} paint={{ 'circle-radius': 8, 'circle-color': '#8b3f32', 'circle-stroke-color': '#fff', 'circle-stroke-width': 3 }} />
         </Source>
       </>
     )
@@ -185,8 +185,8 @@ function FilmLocationLayers({ location }: { location: [number, number] | null })
   if (!location) return null
   return (
     <Source id="selected-film-location" type="geojson" data={{ type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: location } }}>
-      <Layer id="selected-film-location-halo" type="circle" paint={{ 'circle-radius': 13, 'circle-color': 'rgba(255,84,48,.18)', 'circle-stroke-color': '#ff5430', 'circle-stroke-width': 2 }} />
-      <Layer id="selected-film-location-dot" type="circle" paint={{ 'circle-radius': 3, 'circle-color': '#ff5430' }} />
+      <Layer id="selected-film-location-halo" type="circle" paint={{ 'circle-radius': 13, 'circle-color': 'rgba(139,63,50,.18)', 'circle-stroke-color': '#8b3f32', 'circle-stroke-width': 2 }} />
+      <Layer id="selected-film-location-dot" type="circle" paint={{ 'circle-radius': 3, 'circle-color': '#8b3f32' }} />
     </Source>
   )
 }

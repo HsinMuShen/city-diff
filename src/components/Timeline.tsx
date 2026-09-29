@@ -14,19 +14,15 @@ export function Timeline({ city, layers, activeLayer, onChange }: TimelineProps)
   return (
     <aside className="timeline-panel">
       <header className="city-context">
-        <p className="eyebrow">{t('researchScope')}</p>
-        <h2>{cityName(city, locale)}</h2>
+        <span>{cityName(city, locale)}</span>
         <strong>{cityStudyArea(city, locale)}</strong>
         <p>{cityDescription(city, locale)}</p>
       </header>
 
       <section className="version-section">
         <div className="section-title">
-          <div>
-            <p className="eyebrow">{t('historicalLayers')}</p>
-            <h2>{t('chooseVersion')}</h2>
-          </div>
-          <span>{layers.length}</span>
+          <h2>{t('chooseVersion')}</h2>
+          <span>{layers.length} {t('historicalLayers')}</span>
         </div>
         <div className="version-list">
           {layers.map((layer, index) => (

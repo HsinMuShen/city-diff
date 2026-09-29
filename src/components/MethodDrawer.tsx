@@ -1,4 +1,5 @@
 import { ArrowRight, Database, Eye, Sigma, X } from 'lucide-react'
+import { useEffect, useRef, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import type { CityPack } from '../types'
 import { cityName, cityQuestion, useI18n } from '../lib/i18n'
 
@@ -10,13 +11,38 @@ interface MethodDrawerProps {
 
 export function MethodDrawer({ city, open, onClose }: MethodDrawerProps) {
   const { locale, t } = useI18n()
+  const dialogRef = useRef<HTMLElement>(null)
+  const closeRef = useRef<HTMLButtonElement>(null)
+
+  useEffect(() => {
+    if (!open) return
+    const previousFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    closeRef.current?.focus()
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => {
+      document.removeEventListener('keydown', handleEscape)
+      previousFocus?.focus()
+    }
+  }, [onClose, open])
+
+  const keepFocusInDialog = (event: ReactKeyboardEvent<HTMLElement>) => {
+    if (event.key !== 'Tab') return
+    const controls = dialogRef.current?.querySelectorAll<HTMLElement>('button, a[href], select, input, textarea, [tabindex]:not([tabindex="-1"])')
+    if (!controls?.length) return
+    const first = controls[0]
+    const last = controls[controls.length - 1]
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus() }
+    if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus() }
+  }
   if (!open) return null
 
   return (
     <div className="drawer-backdrop" role="presentation" onMouseDown={onClose}>
-      <aside className="method-drawer" role="dialog" aria-modal="true" aria-labelledby="method-title" onMouseDown={(event) => event.stopPropagation()}>
-        <button className="drawer-close" onClick={onClose} aria-label={t('close')}><X /></button>
-        <p className="eyebrow">{t('methodology')}</p>
+      <aside ref={dialogRef} className="method-drawer" role="dialog" aria-modal="true" aria-labelledby="method-title" onKeyDown={keepFocusInDialog} onMouseDown={(event) => event.stopPropagation()}>
+        <button ref={closeRef} className="drawer-close" onClick={onClose} aria-label={t('close')}><X /></button>
         <h2 id="method-title">{t('methodTitleA')}<em>{t('methodTitleB')}</em></h2>
         <p className="drawer-lead">{t('methodLead', { name: cityName(city, locale) })}</p>
         <div className="method-flow">

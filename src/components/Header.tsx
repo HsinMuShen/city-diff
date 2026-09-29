@@ -16,11 +16,8 @@ export function Header({ cities, activeCity, locale, onCityChange, onLocaleChang
   return (
     <header className="app-header">
       <div className="brand">
-        <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-        <div>
-          <p className="eyebrow">{t('cityVersionControl')}</p>
-          <h1>City <em>Diff</em></h1>
-        </div>
+        <span className="brand-mark" aria-hidden="true"><GitCompareArrows size={20} /></span>
+        <h1>City <em>Diff</em></h1>
       </div>
       <label className="city-switcher">
         <span>{t('studyCity')}</span>
@@ -29,10 +26,7 @@ export function Header({ cities, activeCity, locale, onCityChange, onLocaleChang
         </select>
         <ChevronDown size={15} aria-hidden="true" />
       </label>
-      <div className="research-question">
-        <GitCompareArrows size={15} />
-        <p>{cityQuestion(activeCity, locale)}</p>
-      </div>
+      <div className="research-question"><p>{cityQuestion(activeCity, locale)}</p></div>
       <div className="header-actions">
         <button className="language-switcher" onClick={() => onLocaleChange(locale === 'en' ? 'zh-TW' : 'en')} aria-label={`${t('language')}: ${locale === 'en' ? '中文' : 'English'}`}>
           <Languages size={15} />

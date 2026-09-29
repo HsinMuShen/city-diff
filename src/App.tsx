@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type PointerEvent as ReactPointerEvent } from 'react'
+import { X } from 'lucide-react'
 import { CompareMap } from './components/CompareMap'
 import { Header } from './components/Header'
 import { MethodDrawer } from './components/MethodDrawer'
@@ -38,8 +39,13 @@ function App() {
   const [filmLocation, setFilmLocation] = useState<[number, number] | null>(null)
   const [methodOpen, setMethodOpen] = useState(false)
   const [dataError, setDataError] = useState<string | null>(null)
-  const [timelineVisible, setTimelineVisible] = useState(true)
-  const [inspectorVisible, setInspectorVisible] = useState(true)
+  const [timelineVisible, setTimelineVisible] = useState(() => !window.matchMedia('(max-width: 720px)').matches)
+  const [inspectorVisible, setInspectorVisible] = useState(Boolean(initialParameters.get('road')))
+  const [inspectorSheetHeight, setInspectorSheetHeight] = useState(30)
+  const [inspectorSheetDragging, setInspectorSheetDragging] = useState(false)
+  const inspectorSheetHeightRef = useRef(30)
+  const inspectorDragStartRef = useRef<{ y: number; height: number } | null>(null)
+  const inspectorDragMovedRef = useRef(false)
 
   useEffect(() => {
     let cancelled = false
@@ -150,6 +156,9 @@ function App() {
     setSelectedRoadName(roadName)
     setSelectedCulturalAssetId(null)
     setSelectedTraceCandidateId(null)
+    inspectorSheetHeightRef.current = 30
+    setInspectorSheetHeight(30)
+    setInspectorVisible(true)
     updateLocation(activeCity.id, roadName, activeLayer.id)
   }
 
@@ -195,6 +204,50 @@ function App() {
     if (tool !== 'change-film') setFilmLocation(null)
   }
 
+  const updateInspectorSheetHeight = (height: number) => {
+    const nextHeight = Math.min(88, Math.max(30, height))
+    inspectorSheetHeightRef.current = nextHeight
+    setInspectorSheetHeight(nextHeight)
+  }
+
+  const handleInspectorDragStart = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    inspectorDragStartRef.current = { y: event.clientY, height: inspectorSheetHeightRef.current }
+    inspectorDragMovedRef.current = false
+    setInspectorSheetDragging(true)
+    event.currentTarget.setPointerCapture(event.pointerId)
+  }
+
+  const handleInspectorDragMove = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    const start = inspectorDragStartRef.current
+    if (!start) return
+    if (Math.abs(start.y - event.clientY) > 4) inspectorDragMovedRef.current = true
+    updateInspectorSheetHeight(start.height + ((start.y - event.clientY) / window.innerHeight) * 100)
+  }
+
+  const handleInspectorDragEnd = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    if (!inspectorDragStartRef.current) return
+    inspectorDragStartRef.current = null
+    setInspectorSheetDragging(false)
+    updateInspectorSheetHeight(inspectorSheetHeightRef.current >= 52 ? 88 : 30)
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  const cancelInspectorDrag = (event: ReactPointerEvent<HTMLButtonElement>) => {
+    inspectorDragStartRef.current = null
+    inspectorDragMovedRef.current = false
+    setInspectorSheetDragging(false)
+    updateInspectorSheetHeight(inspectorSheetHeightRef.current >= 52 ? 88 : 30)
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId)
+  }
+
+  const toggleInspectorSheetHeight = () => {
+    if (inspectorDragMovedRef.current) {
+      inspectorDragMovedRef.current = false
+      return
+    }
+    updateInspectorSheetHeight(inspectorSheetHeightRef.current > 30 ? 30 : 88)
+  }
+
   const handleTraceCandidateSelect = (candidateId: string) => {
     setSelectedTraceCandidateId(candidateId)
     setInspectorVisible(true)
@@ -216,19 +269,8 @@ function App() {
         onLocaleChange={handleLocaleChange}
         onOpenMethod={() => setMethodOpen(true)}
       />
-      <WorkspaceToolbar
-        activeTool={activeTool}
-        timelineVisible={timelineVisible}
-        inspectorVisible={inspectorVisible}
-        cultureVisible={cultureVisible}
-        onToolChange={handleToolChange}
-        onToggleTimeline={() => setTimelineVisible((visible) => !visible)}
-        onToggleInspector={() => setInspectorVisible((visible) => !visible)}
-        onToggleCulture={handleCultureToggle}
-      />
       {dataError && <div className="data-error">{locale === 'en' ? 'Data failed to load. Refresh the page or try again later.' : `${dataError}。請重新整理或稍後再試。`}</div>}
       <div className={workspaceClassName}>
-        <Timeline city={activeCity} layers={activeCity.historicalLayers} activeLayer={activeLayer} onChange={handleLayerChange} />
         <CompareMap
           key={`map-${activeCity.id}`}
           city={activeCity}
@@ -251,27 +293,61 @@ function App() {
           onFilmLocationSelect={setFilmLocation}
           onHistoricalLayerSelect={handleLayerChange}
         />
-        <RoadInspector
-          key={`inspector-${activeCity.id}`}
-          city={activeCity}
-          selectedRoad={selectedRoad}
-          allRoads={allRoads}
-          suggestedRoads={suggestedRoads}
-          metadata={metadata}
-          walkNetworkMetadata={walkNetworkMetadata}
-          culturalMetadata={culturalMetadata}
-          nearbyCulturalAssets={nearbyCulturalAssets}
-          selectedCulturalAssetId={selectedCulturalAssetId}
+        <WorkspaceToolbar
           activeTool={activeTool}
-          lostAlleyCandidates={urbanTraceAnalysis.lostAlleys.features}
-          stitchPointCandidates={urbanTraceAnalysis.stitchPoints.features}
-          selectedTraceCandidateId={selectedTraceCandidateId}
-          activeLayer={activeLayer}
-          onSelect={handleRoadSelect}
-          onClear={handleRoadClear}
-          onCulturalAssetSelect={handleCulturalAssetSelect}
-          onTraceCandidateSelect={handleTraceCandidateSelect}
+          timelineVisible={timelineVisible}
+          inspectorVisible={inspectorVisible}
+          cultureVisible={cultureVisible}
+          onToolChange={handleToolChange}
+          onToggleTimeline={() => setTimelineVisible((visible) => !visible)}
+          onToggleInspector={() => setInspectorVisible((visible) => !visible)}
+          onToggleCulture={handleCultureToggle}
         />
+        {timelineVisible && <Timeline city={activeCity} layers={activeCity.historicalLayers} activeLayer={activeLayer} onChange={handleLayerChange} />}
+        {inspectorVisible && (
+          <>
+            <button className="inspector-scrim" onClick={() => setInspectorVisible(false)} aria-label={locale === 'en' ? 'Close analysis panel' : '關閉分析欄'} />
+            <section
+              className={`inspector-drawer${inspectorSheetDragging ? ' dragging' : ''}`}
+              style={{ '--inspector-sheet-height': `${inspectorSheetHeight}dvh` } as CSSProperties}
+              aria-label={locale === 'en' ? 'Map analysis' : '地圖分析'}
+            >
+              <button
+                className="inspector-drag-handle"
+                type="button"
+                aria-label={locale === 'en' ? 'Drag to resize analysis panel' : '拖曳調整分析欄高度'}
+                aria-expanded={inspectorSheetHeight > 30}
+                onClick={toggleInspectorSheetHeight}
+                onPointerDown={handleInspectorDragStart}
+                onPointerMove={handleInspectorDragMove}
+                onPointerUp={handleInspectorDragEnd}
+                onPointerCancel={cancelInspectorDrag}
+              ><span /></button>
+              <button className="inspector-close" onClick={() => setInspectorVisible(false)} aria-label={locale === 'en' ? 'Close analysis panel' : '關閉分析欄'}><X size={18} /></button>
+              <RoadInspector
+                key={`inspector-${activeCity.id}`}
+                city={activeCity}
+                selectedRoad={selectedRoad}
+                allRoads={allRoads}
+                suggestedRoads={suggestedRoads}
+                metadata={metadata}
+                walkNetworkMetadata={walkNetworkMetadata}
+                culturalMetadata={culturalMetadata}
+                nearbyCulturalAssets={nearbyCulturalAssets}
+                selectedCulturalAssetId={selectedCulturalAssetId}
+                activeTool={activeTool}
+                lostAlleyCandidates={urbanTraceAnalysis.lostAlleys.features}
+                stitchPointCandidates={urbanTraceAnalysis.stitchPoints.features}
+                selectedTraceCandidateId={selectedTraceCandidateId}
+                activeLayer={activeLayer}
+                onSelect={handleRoadSelect}
+                onClear={handleRoadClear}
+                onCulturalAssetSelect={handleCulturalAssetSelect}
+                onTraceCandidateSelect={handleTraceCandidateSelect}
+              />
+            </section>
+          </>
+        )}
       </div>
       <MethodDrawer city={activeCity} open={methodOpen} onClose={() => setMethodOpen(false)} />
     </div>
