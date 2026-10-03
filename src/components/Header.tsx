@@ -29,9 +29,9 @@ export function Header({ cities, activeCity, locale, onCityChange, onLocaleChang
       <div className="research-question"><p>{cityQuestion(activeCity, locale)}</p></div>
       <div className="header-actions">
         <a className="explorer-link" href={`/explorer?city=${activeCity.id}&lang=${locale}`}><Compass size={15} /><span>{t('explorer')}</span></a>
-        <button className="language-switcher" onClick={() => onLocaleChange(locale === 'en' ? 'zh-TW' : 'en')} aria-label={`${t('language')}: ${locale === 'en' ? '中文' : 'English'}`}>
+        <button className="language-switcher" onClick={() => onLocaleChange(locale === 'en' ? 'zh-TW' : 'en')} aria-label={`${t('language')}: ${locale === 'en' ? 'Traditional Chinese' : 'English'}`}>
           <Languages size={15} />
-          <span>{locale === 'en' ? '中' : 'EN'}</span>
+          <span>{locale === 'en' ? 'ZH' : 'EN'}</span>
         </button>
         <button className="ghost-button" onClick={onOpenMethod}><BookOpen size={15} /> {t('method')}</button>
       </div>

@@ -5,10 +5,10 @@ import { Check, ArrowLeft, Building2, ChevronDown, Compass, Download, Footprints
 import { toPng } from 'html-to-image'
 import { explorerCities, findExplorerCity } from '../data/explorerCities'
 import { analyzeExplorerArea, createRadiusCircle, pointDistanceMeters, type ExplorerLens } from '../lib/explorer'
+import { setBaseMapLanguage } from '../lib/mapLanguage'
 import type { CulturalAssetCollection, ExplorerCity, Locale, PopulationAreaCollection, RoadFeatureCollection, TransitCollection, UrbanFormCollection } from '../types'
 
 const baseMapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
-const baseMapNameLayers = ['waterway_label', 'watername_ocean', 'watername_sea', 'watername_lake', 'watername_lake_line', 'place_hamlet', 'place_suburbs', 'place_villages', 'place_town', 'place_country_2', 'place_country_1', 'place_state', 'place_continent', 'place_city_r6', 'place_city_r5', 'place_city_dot_r7', 'place_city_dot_r4', 'place_city_dot_r2', 'place_city_dot_z7', 'place_capital_dot_z7', 'poi_stadium', 'poi_park', 'roadname_minor', 'roadname_sec', 'roadname_pri', 'roadname_major']
 const parameters = new URLSearchParams(window.location.search)
 const requestedLocale = parameters.get('lang')
 const initialLocale: Locale = requestedLocale === 'en' || requestedLocale === 'zh-TW'
@@ -172,11 +172,7 @@ export function ExplorerPage() {
   }, [locale])
 
   const applyMapLanguage = () => {
-    const map = mapRef.current?.getMap()
-    if (!map?.isStyleLoaded()) return
-    baseMapNameLayers.forEach((layerId) => {
-      if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'text-field', locale === 'en' ? '{name_en}' : '{name}')
-    })
+    setBaseMapLanguage(mapRef.current?.getMap(), locale)
   }
 
   useEffect(() => { applyMapLanguage() }, [locale])

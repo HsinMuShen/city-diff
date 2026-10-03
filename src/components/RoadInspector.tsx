@@ -132,15 +132,17 @@ export function RoadInspector({ city, selectedRoad, allRoads, suggestedRoads, me
         <p>{t('culturalHelp')}</p>
         {nearbyCulturalAssets.length > 0 ? (
           <div className="cultural-asset-list">
-            {nearbyCulturalAssets.slice(0, 5).map(({ asset, distanceMeters }) => (
-              <article key={asset.properties.case_id} className={selectedCulturalAssetId === asset.properties.case_id ? 'selected' : undefined}>
+            {nearbyCulturalAssets.slice(0, 5).map(({ asset, distanceMeters }) => {
+              const assetName = locale === 'en' ? asset.properties.name_en ?? asset.properties.name : asset.properties.name
+              const classification = locale === 'en' ? asset.properties.classification_en ?? asset.properties.classification : asset.properties.classification
+              return <article key={asset.properties.case_id} className={selectedCulturalAssetId === asset.properties.case_id ? 'selected' : undefined}>
                 <button onClick={() => onCulturalAssetSelect(asset.properties.case_id)} aria-pressed={selectedCulturalAssetId === asset.properties.case_id}>
-                  <strong>{asset.properties.name}</strong>
-                  <span>{asset.properties.classification} · {formatLength(distanceMeters)}</span>
+                  <strong>{assetName}</strong>
+                  <span>{classification} · {formatLength(distanceMeters)}</span>
                 </button>
-                <a href={asset.properties.official_url} target="_blank" rel="noreferrer" aria-label={locale === 'en' ? `Open official record for ${asset.properties.name}` : `開啟${asset.properties.name}官方資料`}><ArrowUpRight size={14} /></a>
+                <a href={asset.properties.official_url} target="_blank" rel="noreferrer" aria-label={locale === 'en' ? `Open official record for ${assetName}` : `開啟${asset.properties.name}官方資料`}><ArrowUpRight size={14} /></a>
               </article>
-            ))}
+            })}
             {nearbyCulturalAssets.length > 5 && <p className="more-cultural-assets">{t('morePlaces', { count: nearbyCulturalAssets.length - 5 })}</p>}
           </div>
         ) : (

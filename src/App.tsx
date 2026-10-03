@@ -19,7 +19,7 @@ const initialLayer = initialCity.historicalLayers.find((layer) => layer.id === i
 const requestedLocale = initialParameters.get('lang')
 const initialLocale: Locale = requestedLocale === 'en' || requestedLocale === 'zh-TW'
   ? requestedLocale
-  : navigator.language.toLowerCase().startsWith('zh') ? 'zh-TW' : 'en'
+  : 'en'
 
 function App() {
   const [locale, setLocale] = useState<Locale>(initialLocale)

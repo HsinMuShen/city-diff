@@ -7,6 +7,7 @@ import type { CityPack, CulturalAssetCollection, CulturalAssetFeature, Historica
 import { ChangeFilm } from './ChangeFilm'
 import { stitchPointEndpoints } from '../lib/urbanTraces'
 import { ensureSelectedRoadOnTop } from '../lib/mapLayers'
+import { setBaseMapLanguage } from '../lib/mapLanguage'
 
 interface CompareMapProps {
   city: CityPack
@@ -245,6 +246,16 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     }
   }, [])
 
+  const applyMapLanguage = useCallback(() => {
+    setBaseMapLanguage(currentMapRef.current?.getMap(), locale)
+    setBaseMapLanguage(historicalMapRef.current?.getMap(), locale)
+  }, [locale])
+
+  const prepareMaps = useCallback(() => {
+    applyMapLanguage()
+    bringSelectedRoadToFront()
+  }, [applyMapLanguage, bringSelectedRoadToFront])
+
   useEffect(() => {
     focusSelectedRoad()
   }, [focusSelectedRoad])
@@ -253,6 +264,11 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     const frame = window.requestAnimationFrame(bringSelectedRoadToFront)
     return () => window.cancelAnimationFrame(frame)
   }, [activeTool, bringSelectedRoadToFront, culturalAssets, cultureVisible, historicalLayer.id, lostAlleyCandidates, selectedRoadData, stitchPointCandidates])
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(applyMapLanguage)
+    return () => window.cancelAnimationFrame(frame)
+  }, [applyMapLanguage])
 
   useEffect(() => {
     if (!selectedCulturalAsset || !currentMapRef.current) return
@@ -307,13 +323,17 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
     setHoveredTrace(null)
     const culturalFeature = event.features?.find((feature) => feature.layer.id === 'cultural-assets-hit')
     const caseId = culturalFeature?.properties?.case_id
-    const assetName = culturalFeature?.properties?.name
+    const rawAssetName = culturalFeature?.properties?.name
+    const englishAssetName = culturalFeature?.properties?.name_en
+    const assetName = locale === 'en' && typeof englishAssetName === 'string' ? englishAssetName : rawAssetName
     if (typeof caseId === 'string' && typeof assetName === 'string') {
       setHoveredRoad(null)
       setHoveredCulturalAsset({
         caseId,
         name: assetName,
-        classification: typeof culturalFeature?.properties?.classification === 'string' ? culturalFeature.properties.classification : t('monuments'),
+        classification: locale === 'en' && typeof culturalFeature?.properties?.classification_en === 'string'
+          ? culturalFeature.properties.classification_en
+          : typeof culturalFeature?.properties?.classification === 'string' ? culturalFeature.properties.classification : t('monuments'),
         x: event.point.x,
         y: event.point.y,
       })
@@ -375,7 +395,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
           ref={currentMapRef}
           initialViewState={initialViewState}
           onMove={synchronizeHistoricalMap}
-          onLoad={() => { focusSelectedRoad(); bringSelectedRoadToFront() }}
+          onLoad={() => { focusSelectedRoad(); prepareMaps() }}
           onStyleData={bringSelectedRoadToFront}
           onIdle={bringSelectedRoadToFront}
           onClick={handleClick}
@@ -408,7 +428,7 @@ export function CompareMap({ city, historicalLayer, roads, roadNameCount, select
       </div>
 
       <div className="map-layer historical-map" style={{ clipPath: `inset(0 ${100 - split}% 0 0)` }} aria-hidden="true">
-        <Map ref={historicalMapRef} initialViewState={initialViewState} onLoad={bringSelectedRoadToFront} onStyleData={bringSelectedRoadToFront} onIdle={bringSelectedRoadToFront} mapStyle={baseMapStyle} minZoom={12.5} maxZoom={19} attributionControl={false} interactive={false} reuseMaps>
+        <Map ref={historicalMapRef} initialViewState={initialViewState} onLoad={prepareMaps} onStyleData={bringSelectedRoadToFront} onIdle={bringSelectedRoadToFront} mapStyle={baseMapStyle} minZoom={12.5} maxZoom={19} attributionControl={false} interactive={false} reuseMaps>
           <Source key={historicalLayer.id} id="historical-raster" type="raster" tiles={historicalTiles} tileSize={256} bounds={historicalLayer.bounds} attribution="中央研究院人社中心地理資訊科學研究專題中心">
             <Layer id="historical-raster-layer" type="raster" paint={{ 'raster-opacity': 0.88, 'raster-fade-duration': 0 }} />
           </Source>

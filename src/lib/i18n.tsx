@@ -34,8 +34,8 @@ type CopyKey = keyof typeof copy['zh-TW']
 type Variables = Record<string, string | number>
 
 const I18nContext = createContext<{ locale: Locale; t: (key: CopyKey, variables?: Variables) => string }>({
-  locale: 'zh-TW',
-  t: (key) => copy['zh-TW'][key],
+  locale: 'en',
+  t: (key) => copy.en[key],
 })
 
 export function I18nProvider({ locale, children }: { locale: Locale; children: ReactNode }) {
