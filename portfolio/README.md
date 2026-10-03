@@ -2,7 +2,7 @@
 
 ## Files
 
-- `City-Diff-Portfolio-Reference.pdf` — 12-page, 16:9 reference PDF.
+- `City-Diff-Portfolio-Reference.pdf` — 12-page, English-language, 16:9 reference PDF.
 - `city-diff-portfolio.html` — editable source used to produce the PDF.
 - `assets/portfolio-contact-sheet.jpg` — one-image overview of all pages.
 - `assets/` — interface captures and research charts used by the layout.
