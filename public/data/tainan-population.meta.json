@@ -1,0 +1,27 @@
+{
+  "cityId": "tainan",
+  "studyArea": "中西區與北區歷史核心",
+  "title": "中西區與北區歷史核心 population by smallest statistical area",
+  "source": "Ministry of the Interior Department of Statistics (Taiwan)",
+  "sourceUrls": [
+    "https://data.gov.tw/dataset/25128",
+    "https://data.gov.tw/dataset/18681",
+    "https://data.gov.tw/dataset/18255"
+  ],
+  "resourceUrls": [
+    "https://opdadm.moi.gov.tw/api/v1/no-auth/resource/api/dataset/03C1D0A5-1F39-4C1F-AA2E-BB37A0405369/resource/FA487CB1-A949-437B-BE01-302FE3FD06EA/download",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DBA1D61A4DBA84DCB45C075678FCE6CFB3320C3EF6DBC4DE80A46DEC5BF5F23516",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DB383C1E6118239FA953C0321BEC896AE20956DEC9A8D69E14E03D116C7D8EACF3"
+  ],
+  "fetchedAt": "2026-10-03T08:47:19.198873Z",
+  "populationPeriod": "113Y12M",
+  "agePeriod": "113Y12M",
+  "license": "Open Government Data License, version 1.0",
+  "featureCount": 2621,
+  "sha256": "8c32b21f73769469bfed8ec8201e8e3a46fda3eb49e93fa97bfd1e61977b8e76",
+  "limitations": [
+    "Population is assigned to a study circle when a statistical area's official centroid falls inside it.",
+    "Small statistical area boundaries are the published 2015 geometry; population and age totals are December 2024.",
+    "Circle-edge estimates are approximate because statistical areas are not clipped or proportionally allocated."
+  ]
+}

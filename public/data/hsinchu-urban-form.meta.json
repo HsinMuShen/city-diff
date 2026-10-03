@@ -1,0 +1,18 @@
+{
+  "cityId": "hsinchu",
+  "studyArea": "竹塹舊城核心",
+  "title": "竹塹舊城核心 OSM urban-form snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.644098Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 2209,
+  "sha256": "aaa0ed370de99b0891866d2c4ad46f081a3e7165cb54346af5fe721d02e701ac",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

@@ -68,12 +68,34 @@ These are exploratory morphology and connectivity candidates. They do not prove 
 
 This endpoint contains registered monuments (`古蹟`), not every cultural-heritage category. Coordinates are provider-supplied representative points rather than legal site polygons. City Diff derives the shortest planar distance from each selected OSM road centreline to each monument point and lists results within 500 metres. Proximity is a discovery aid: it does not establish that the road and monument are historically related, that a road project affected the site, or that a 500-metre threshold has legal significance.
 
-## 4. Base map
+## 4. Explorer population and demographics
+
+- Provider: Ministry of the Interior, Department of Statistics
+- Smallest statistical-area boundaries: <https://data.gov.tw/dataset/25128>
+- Population and household totals: <https://data.gov.tw/dataset/18681>
+- Five-year age groups: <https://data.gov.tw/dataset/18255>
+- License: Open Government Data License, version 1.0
+
+`scripts/extract-explorer-population.py` joins the published 2015 smallest statistical-area geometry to December 2024 population, household, sex, and age totals. It retains only areas surrounding the nine Explorer study bboxes and converts TWD97 / TM2 zone 121 geometry to WGS84. Every output has a metadata file with the source resource URLs, periods, feature count, license, and SHA-256.
+
+The live Explorer assigns a statistical area to a circle when its official centroid is inside the radius. Population and demographic totals are therefore estimates near the circle edge; polygons are not split and residents are not proportionally allocated. The interface reports the source period and method rather than presenting the values as real-time population.
+
+## 5. Explorer built form, green space, and rail transit
+
+`scripts/extract-explorer-context.py` derives three comparable OSM themes from the stored Geofabrik Taiwan PBF:
+
+- closed ways tagged `building=*` for building count and footprint coverage;
+- closed ways tagged as parks, gardens, recreation grounds, nature reserves, playgrounds, grass, forest, or village green;
+- active `rail`, `subway`, `light_rail`, `tram`, and `monorail` ways plus mapped stations, halts, and tram stops.
+
+Coverage uses the complete area of a closed way when its centroid lies inside the study circle. Rail length samples line segments using the same approximate circle-edge method as the street analysis. OSM multipolygon relations are not included, so building and green-space coverage can be lower than authoritative land-use or building datasets. Station and corridor completeness varies by city and reflects OSM mapping, not an operator timetable or proof of service frequency.
+
+## 6. Base map
 
 - CARTO Positron tiles
 - OpenStreetMap attribution remains visible in the interface.
 
-## 5. Odd-lot analysis boundary
+## 7. Odd-lot analysis boundary
 
 The 2016 Tainan cadastral layer currently used by City Diff is a raster tile service. It is useful as visual evidence, but it does not expose parcel vertices, parcel IDs, ownership, zoning or legal status for computation.
 

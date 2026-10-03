@@ -1,0 +1,27 @@
+{
+  "cityId": "taoyuan",
+  "studyArea": "桃園舊城與車站核心",
+  "title": "桃園舊城與車站核心 population by smallest statistical area",
+  "source": "Ministry of the Interior Department of Statistics (Taiwan)",
+  "sourceUrls": [
+    "https://data.gov.tw/dataset/25128",
+    "https://data.gov.tw/dataset/18681",
+    "https://data.gov.tw/dataset/18255"
+  ],
+  "resourceUrls": [
+    "https://opdadm.moi.gov.tw/api/v1/no-auth/resource/api/dataset/03C1D0A5-1F39-4C1F-AA2E-BB37A0405369/resource/1345EDDE-F774-4E1D-8B9B-3AB08F75BE22/download",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DBA1D61A4DBA84DCB498450F1BD67D4B02320C3EF6DBC4DE80A46DEC5BF5F23516",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DB383C1E6118239FA94192F97D18817E200956DEC9A8D69E14E03D116C7D8EACF3"
+  ],
+  "fetchedAt": "2026-10-03T08:47:50.517361Z",
+  "populationPeriod": "113Y12M",
+  "agePeriod": "113Y12M",
+  "license": "Open Government Data License, version 1.0",
+  "featureCount": 2253,
+  "sha256": "54b5c46d970636849a926936e39a37857112da101988a14f1751bbbe462b5e60",
+  "limitations": [
+    "Population is assigned to a study circle when a statistical area's official centroid falls inside it.",
+    "Small statistical area boundaries are the published 2015 geometry; population and age totals are December 2024.",
+    "Circle-edge estimates are approximate because statistical areas are not clipped or proportionally allocated."
+  ]
+}

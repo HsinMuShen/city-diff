@@ -1,0 +1,18 @@
+{
+  "cityId": "taoyuan",
+  "studyArea": "桃園舊城與車站核心",
+  "title": "桃園舊城與車站核心 OSM transit snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.628743Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 12,
+  "sha256": "cab5021f23f14f94c3c7f812a5949ecac21dd3436442b34bee159f949312bf38",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

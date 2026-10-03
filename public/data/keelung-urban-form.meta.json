@@ -1,0 +1,18 @@
+{
+  "cityId": "keelung",
+  "studyArea": "港區與市中心核心",
+  "title": "港區與市中心核心 OSM urban-form snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.668263Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 1171,
+  "sha256": "135ff48cab19f6f5763ea38c55649bce962c7a974472fe608bc98edb587045ce",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

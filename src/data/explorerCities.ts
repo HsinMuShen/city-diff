@@ -12,6 +12,9 @@ const comparisonCities: ExplorerCity[] = cityPacks.map((city) => ({
   studyBounds: city.studyBounds,
   roadDataUrl: city.roadDataUrl,
   walkNetworkDataUrl: city.walkNetworkDataUrl,
+  populationDataUrl: `/data/${city.id}-population.geojson`,
+  urbanFormDataUrl: `/data/${city.id}-urban-form.geojson`,
+  transitDataUrl: `/data/${city.id}-transit.geojson`,
   comparisonCityId: city.id,
 }))
 
@@ -27,6 +30,9 @@ const explorerOnlyCities: ExplorerCity[] = [
     studyBounds: [121.444, 24.997, 121.476, 25.026],
     roadDataUrl: '/data/new-taipei-roads.geojson',
     walkNetworkDataUrl: '/data/new-taipei-walk-network.geojson',
+    populationDataUrl: '/data/new-taipei-population.geojson',
+    urbanFormDataUrl: '/data/new-taipei-urban-form.geojson',
+    transitDataUrl: '/data/new-taipei-transit.geojson',
   },
   {
     id: 'taoyuan',
@@ -39,6 +45,9 @@ const explorerOnlyCities: ExplorerCity[] = [
     studyBounds: [121.294, 24.981, 121.329, 25.011],
     roadDataUrl: '/data/taoyuan-roads.geojson',
     walkNetworkDataUrl: '/data/taoyuan-walk-network.geojson',
+    populationDataUrl: '/data/taoyuan-population.geojson',
+    urbanFormDataUrl: '/data/taoyuan-urban-form.geojson',
+    transitDataUrl: '/data/taoyuan-transit.geojson',
   },
   {
     id: 'hsinchu',
@@ -51,6 +60,9 @@ const explorerOnlyCities: ExplorerCity[] = [
     studyBounds: [120.952, 24.792, 120.984, 24.818],
     roadDataUrl: '/data/hsinchu-roads.geojson',
     walkNetworkDataUrl: '/data/hsinchu-walk-network.geojson',
+    populationDataUrl: '/data/hsinchu-population.geojson',
+    urbanFormDataUrl: '/data/hsinchu-urban-form.geojson',
+    transitDataUrl: '/data/hsinchu-transit.geojson',
   },
   {
     id: 'chiayi',
@@ -63,6 +75,9 @@ const explorerOnlyCities: ExplorerCity[] = [
     studyBounds: [120.432, 23.465, 120.466, 23.494],
     roadDataUrl: '/data/chiayi-roads.geojson',
     walkNetworkDataUrl: '/data/chiayi-walk-network.geojson',
+    populationDataUrl: '/data/chiayi-population.geojson',
+    urbanFormDataUrl: '/data/chiayi-urban-form.geojson',
+    transitDataUrl: '/data/chiayi-transit.geojson',
   },
   {
     id: 'keelung',
@@ -75,6 +90,9 @@ const explorerOnlyCities: ExplorerCity[] = [
     studyBounds: [121.724, 25.116, 121.758, 25.145],
     roadDataUrl: '/data/keelung-roads.geojson',
     walkNetworkDataUrl: '/data/keelung-walk-network.geojson',
+    populationDataUrl: '/data/keelung-population.geojson',
+    urbanFormDataUrl: '/data/keelung-urban-form.geojson',
+    transitDataUrl: '/data/keelung-transit.geojson',
   },
 ]
 

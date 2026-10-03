@@ -1,0 +1,27 @@
+{
+  "cityId": "new-taipei",
+  "studyArea": "板橋舊城與府中核心",
+  "title": "板橋舊城與府中核心 population by smallest statistical area",
+  "source": "Ministry of the Interior Department of Statistics (Taiwan)",
+  "sourceUrls": [
+    "https://data.gov.tw/dataset/25128",
+    "https://data.gov.tw/dataset/18681",
+    "https://data.gov.tw/dataset/18255"
+  ],
+  "resourceUrls": [
+    "https://opdadm.moi.gov.tw/api/v1/no-auth/resource/api/dataset/03C1D0A5-1F39-4C1F-AA2E-BB37A0405369/resource/72911996-F79A-4C1C-8144-91D23398A18B/download",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DBA1D61A4DBA84DCB4A4BD546BD98169DD320C3EF6DBC4DE80A46DEC5BF5F23516",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DB383C1E6118239FA9FF4ED0B8209CF62C0956DEC9A8D69E14E03D116C7D8EACF3"
+  ],
+  "fetchedAt": "2026-10-03T08:47:44.434647Z",
+  "populationPeriod": "113Y12M",
+  "agePeriod": "113Y12M",
+  "license": "Open Government Data License, version 1.0",
+  "featureCount": 2985,
+  "sha256": "dcb3ca7148e5a7cd787f49d14b19f7b882a60b7bfa9d1fe649da79ab480e93a0",
+  "limitations": [
+    "Population is assigned to a study circle when a statistical area's official centroid falls inside it.",
+    "Small statistical area boundaries are the published 2015 geometry; population and age totals are December 2024.",
+    "Circle-edge estimates are approximate because statistical areas are not clipped or proportionally allocated."
+  ]
+}

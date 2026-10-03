@@ -1,0 +1,18 @@
+{
+  "cityId": "tainan",
+  "studyArea": "中西區與北區歷史核心",
+  "title": "中西區與北區歷史核心 OSM transit snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.423765Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 12,
+  "sha256": "0f73bed7467ccd7a34b6c7d787f04e3db76d5237521749c50e3d1c84b1f7fa9c",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "cityId": "new-taipei",
+  "studyArea": "板橋舊城與府中核心",
+  "title": "板橋舊城與府中核心 OSM urban-form snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.604957Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 2789,
+  "sha256": "98e5a084b1510d2ed0a667f8fd277af8c91120bfae31f8a76f06c209a2455d97",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

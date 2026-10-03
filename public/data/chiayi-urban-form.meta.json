@@ -1,0 +1,18 @@
+{
+  "cityId": "chiayi",
+  "studyArea": "嘉義舊城與車站核心",
+  "title": "嘉義舊城與車站核心 OSM urban-form snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.659155Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 2033,
+  "sha256": "12d1dc43e74e0769b1d77a8e19f2a68993ad1d076d09314b90474c6c484cb39b",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

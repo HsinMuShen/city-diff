@@ -3,7 +3,9 @@ import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import { cityPacks } from './cityPacks'
 import { explorerCities } from './explorerCities'
-import type { CulturalAssetCollection, CulturalAssetMetadata, RoadFeatureCollection, RoadMetadata } from '../types'
+import type { CulturalAssetCollection, CulturalAssetMetadata, PopulationAreaCollection, RoadFeatureCollection, RoadMetadata, TransitCollection, UrbanFormCollection } from '../types'
+
+interface ExplorerSnapshotMetadata { cityId: string; featureCount: number; sha256: string; license: string }
 
 describe('source data integrity', () => {
   for (const city of explorerCities) {
@@ -38,6 +40,21 @@ describe('source data integrity', () => {
       expect(network.features.every((feature) => feature.geometry.type === 'LineString')).toBe(true)
       expect(network.features.every((feature) => feature.properties.name.length > 0)).toBe(true)
       expect(network.features.every((feature) => feature.properties.source === 'OpenStreetMap')).toBe(true)
+    })
+
+    it(`keeps the ${city.name} urban profile snapshots and provenance records in sync`, () => {
+      for (const suffix of ['population', 'urban-form', 'transit']) {
+        const dataUrl = new URL(`../../public/data/${city.id}-${suffix}.geojson`, import.meta.url)
+        const metadataUrl = new URL(`../../public/data/${city.id}-${suffix}.meta.json`, import.meta.url)
+        const dataText = readFileSync(dataUrl, 'utf8')
+        const data = JSON.parse(dataText) as PopulationAreaCollection | UrbanFormCollection | TransitCollection
+        const metadata = JSON.parse(readFileSync(metadataUrl, 'utf8')) as ExplorerSnapshotMetadata
+        expect(metadata.cityId).toBe(city.id)
+        expect(data.features.length).toBe(metadata.featureCount)
+        expect(createHash('sha256').update(dataText).digest('hex')).toBe(metadata.sha256)
+        expect(metadata.license.length).toBeGreaterThan(0)
+        expect(data.features.length).toBeGreaterThan(suffix === 'transit' ? 0 : 500)
+      }
     })
   }
 

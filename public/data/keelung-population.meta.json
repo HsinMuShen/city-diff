@@ -1,0 +1,27 @@
+{
+  "cityId": "keelung",
+  "studyArea": "港區與市中心核心",
+  "title": "港區與市中心核心 population by smallest statistical area",
+  "source": "Ministry of the Interior Department of Statistics (Taiwan)",
+  "sourceUrls": [
+    "https://data.gov.tw/dataset/25128",
+    "https://data.gov.tw/dataset/18681",
+    "https://data.gov.tw/dataset/18255"
+  ],
+  "resourceUrls": [
+    "https://opdadm.moi.gov.tw/api/v1/no-auth/resource/api/dataset/03C1D0A5-1F39-4C1F-AA2E-BB37A0405369/resource/A64BA3A7-7E2D-4803-9188-BA691F47FE8E/download",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DBA1D61A4DBA84DCB4E4BD6BD69354D4F359B0883B8FBC7181A46DEC5BF5F23516",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DB383C1E6118239FA949E38F3882CE7D1A658B6629E77FF018E03D116C7D8EACF3"
+  ],
+  "fetchedAt": "2026-10-03T08:48:00.210336Z",
+  "populationPeriod": "113Y12M",
+  "agePeriod": "113Y12M",
+  "license": "Open Government Data License, version 1.0",
+  "featureCount": 1066,
+  "sha256": "8d635db4f5acedab89b31e977ea635ab22e7e21cadd4fa0b5f8c8abf9879bc23",
+  "limitations": [
+    "Population is assigned to a study circle when a statistical area's official centroid falls inside it.",
+    "Small statistical area boundaries are the published 2015 geometry; population and age totals are December 2024.",
+    "Circle-edge estimates are approximate because statistical areas are not clipped or proportionally allocated."
+  ]
+}

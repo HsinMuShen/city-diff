@@ -1,0 +1,27 @@
+{
+  "cityId": "taichung",
+  "studyArea": "中區舊城核心",
+  "title": "中區舊城核心 population by smallest statistical area",
+  "source": "Ministry of the Interior Department of Statistics (Taiwan)",
+  "sourceUrls": [
+    "https://data.gov.tw/dataset/25128",
+    "https://data.gov.tw/dataset/18681",
+    "https://data.gov.tw/dataset/18255"
+  ],
+  "resourceUrls": [
+    "https://opdadm.moi.gov.tw/api/v1/no-auth/resource/api/dataset/03C1D0A5-1F39-4C1F-AA2E-BB37A0405369/resource/4546E5CB-3088-48A4-80C4-7AA846281BE3/download",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DBA1D61A4DBA84DCB45BB2F8B8A1BC0667320C3EF6DBC4DE80A46DEC5BF5F23516",
+    "https://segisws.moi.gov.tw/STATWSSTData/OpenService.asmx/GetStatSTDataForOpenCode?oCode=6E03CA29B955A854397166638603FC3B51A1FBEE829C41DB383C1E6118239FA90EDAA3C4D36A0E910956DEC9A8D69E14E03D116C7D8EACF3"
+  ],
+  "fetchedAt": "2026-10-03T08:47:33.102355Z",
+  "populationPeriod": "113Y12M",
+  "agePeriod": "113Y12M",
+  "license": "Open Government Data License, version 1.0",
+  "featureCount": 2118,
+  "sha256": "c79fb6f9f390793c4e835f7909c5ce80a2de181b4b233f981e55ed629be859b0",
+  "limitations": [
+    "Population is assigned to a study circle when a statistical area's official centroid falls inside it.",
+    "Small statistical area boundaries are the published 2015 geometry; population and age totals are December 2024.",
+    "Circle-edge estimates are approximate because statistical areas are not clipped or proportionally allocated."
+  ]
+}

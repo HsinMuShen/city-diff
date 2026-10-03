@@ -1,0 +1,18 @@
+{
+  "cityId": "taipei",
+  "studyArea": "艋舺—大稻埕歷史核心",
+  "title": "艋舺—大稻埕歷史核心 OSM transit snapshot",
+  "source": "OpenStreetMap contributors via Geofabrik Taiwan extract",
+  "sourceUrl": "https://download.geofabrik.de/asia/taiwan.html",
+  "endpoint": "taiwan-city-diff-260928.osm.pbf",
+  "fetchedAt": "2026-10-03T08:54:21.584866Z",
+  "osmDataTimestamp": "2026-09-28T20:23:05Z",
+  "license": "Open Database License (ODbL)",
+  "featureCount": 177,
+  "sha256": "261cf5e18f7e7b9a4cec357a9136657fc992323fd7f377889a2c761456333c64",
+  "limitations": [
+    "OpenStreetMap is contributor-maintained and may be incomplete.",
+    "Polygon statistics use closed OSM ways; multipolygon relations are not included.",
+    "Features are assigned to a study circle by centroid or sampled line segments, so circle-edge values are approximate."
+  ]
+}

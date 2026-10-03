@@ -1,4 +1,4 @@
-import type { Feature, FeatureCollection, LineString, Point } from 'geojson'
+import type { Feature, FeatureCollection, LineString, MultiPolygon, Point, Polygon } from 'geojson'
 
 export interface HistoricalLayer {
   id: string
@@ -48,6 +48,9 @@ export interface ExplorerCity {
   studyBounds: [number, number, number, number]
   roadDataUrl: string
   walkNetworkDataUrl: string
+  populationDataUrl: string
+  urbanFormDataUrl: string
+  transitDataUrl: string
   comparisonCityId?: CityId
 }
 
@@ -110,6 +113,45 @@ export interface CulturalAssetProperties {
 
 export type CulturalAssetFeature = Feature<Point, CulturalAssetProperties>
 export type CulturalAssetCollection = FeatureCollection<Point, CulturalAssetProperties>
+
+export interface PopulationAreaProperties {
+  code: string
+  district: string
+  area_m2: number
+  centroid: [number, number]
+  population: number
+  households: number
+  male: number
+  female: number
+  ages: [number, number, number, number]
+  density_km2: number
+}
+
+export type PopulationAreaFeature = Feature<Polygon | MultiPolygon, PopulationAreaProperties>
+export type PopulationAreaCollection = FeatureCollection<Polygon | MultiPolygon, PopulationAreaProperties>
+
+export interface UrbanFormProperties {
+  kind: 'building' | 'green'
+  category: string
+  name: string | null
+  area_m2: number
+  centroid: [number, number]
+}
+
+export type UrbanFormFeature = Feature<Polygon, UrbanFormProperties>
+export type UrbanFormCollection = FeatureCollection<Polygon, UrbanFormProperties>
+
+export interface TransitProperties {
+  kind: 'line' | 'station'
+  mode: string
+  name: string | null
+  name_en: string | null
+  network: string | null
+  operator: string | null
+}
+
+export type TransitFeature = Feature<LineString | Point, TransitProperties>
+export type TransitCollection = FeatureCollection<LineString | Point, TransitProperties>
 
 export interface CulturalAssetMetadata {
   title: string
