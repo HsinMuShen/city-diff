@@ -66,6 +66,8 @@ These are exploratory morphology and connectivity candidates. They do not prove 
 
 `npm run data:culture` downloads the official nationwide dataset and produces a normalized GeoJSON snapshot plus a provenance record. The metadata records the endpoint, extraction time, raw and retained record counts, omitted records and SHA-256. Records without valid Taiwan coordinates are omitted rather than guessed.
 
+The official endpoint supplies Chinese titles and locations without English equivalents. `npm run data:culture:translate` creates cached English display translations for monument names, classifications, and districts, then adds them as separate `*_en` fields. The original fields remain unchanged. These automated translations are labelled in the English interface and must not be treated as official translated monument names. Running `npm run data:culture` reapplies the stored translation cache; run the translation step again when new source records appear.
+
 This endpoint contains registered monuments (`古蹟`), not every cultural-heritage category. Coordinates are provider-supplied representative points rather than legal site polygons. City Diff derives the shortest planar distance from each selected OSM road centreline to each monument point and lists results within 500 metres. Proximity is a discovery aid: it does not establish that the road and monument are historically related, that a road project affected the site, or that a 500-metre threshold has legal significance.
 
 ## 4. Explorer population and demographics

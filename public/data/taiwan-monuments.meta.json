@@ -8,11 +8,16 @@
   "rawRecordCount": 1063,
   "featureCount": 1057,
   "omittedRecordCount": 6,
-  "sha256": "96c57b5483f8b7bd6de64cb7790a7a7e5a912a92062d969a369f012c843f2d20",
+  "sha256": "5d9b4827e8f15136bb9bc0f5ae19c48243ab4793b20964bc5e52b3ac2b9e20ab",
   "limitations": [
     "This dataset covers registered monuments (古蹟), not every class of cultural heritage.",
     "Coordinates are provider-supplied representative points, not legal site boundaries.",
     "Road proximity is measured to the representative point and does not establish historical causality.",
     "The source has an irregular update frequency; use fetchedAt to identify this snapshot."
-  ]
+  ],
+  "englishDisplayTranslation": {
+    "provider": "Google Translate",
+    "generatedAt": "2026-10-03T09:02:50.252349Z",
+    "notice": "Display translations are automated and are not official English monument names."
+  }
 }

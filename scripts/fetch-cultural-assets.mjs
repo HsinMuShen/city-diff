@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -8,6 +8,8 @@ const endpoint = 'https://data.boch.gov.tw/opendata/v2/assetsCase/1.1.json'
 const sourceUrl = 'https://data.gov.tw/dataset/6246'
 const outputPath = resolve(projectRoot, 'public/data/taiwan-monuments.geojson')
 const metadataPath = resolve(projectRoot, 'public/data/taiwan-monuments.meta.json')
+const translationPath = resolve(projectRoot, 'public/data/taiwan-monuments.en.json')
+const translations = await readFile(translationPath, 'utf8').then(JSON.parse).catch(() => ({ names: {}, districts: {}, classifications: {} }))
 
 const response = await fetch(endpoint, { signal: AbortSignal.timeout(120_000) })
 if (!response.ok) throw new Error(`Cultural heritage request failed: ${response.status} ${response.statusText}`)
@@ -37,6 +39,9 @@ const features = payload
         official_url: officialUrl,
         image_url: record.representImage?.transform?.c ?? record.representImage?.original ?? null,
         source: '文化部文化資產局',
+        name_en: translations.names?.[String(record.caseName ?? '')] ?? null,
+        classification_en: translations.classifications?.[String(record.assetsClassifyName ?? '')] ?? null,
+        district_en: translations.districts?.[String(address?.distName ?? '')] ?? null,
       },
       geometry: {
         type: 'Point',
@@ -71,6 +76,11 @@ const metadata = {
     'Road proximity is measured to the representative point and does not establish historical causality.',
     'The source has an irregular update frequency; use fetchedAt to identify this snapshot.',
   ],
+  englishDisplayTranslation: translations.provider ? {
+    provider: translations.provider,
+    generatedAt: translations.generatedAt,
+    notice: translations.notice,
+  } : null,
 }
 
 await mkdir(dirname(outputPath), { recursive: true })

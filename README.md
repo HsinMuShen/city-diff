@@ -43,9 +43,10 @@ node scripts/fetch-osm-roads.mjs taipei taichung
 
 ```bash
 npm run data:culture
+npm run data:culture:translate
 ```
 
-這會從文化部文化資產局官方開放資料端點取得全臺登錄古蹟，並產生 `public/data/taiwan-monuments.geojson` 與 provenance metadata。無有效臺灣座標的紀錄會被排除，不會猜測或補造。
+第一個指令會從文化部文化資產局官方開放資料端點取得全臺登錄古蹟，並產生 `public/data/taiwan-monuments.geojson` 與 provenance metadata。無有效臺灣座標的紀錄會被排除，不會猜測或補造。第二個指令建立獨立的英文顯示翻譯欄位與快取；官方中文欄位仍完整保留，介面也會標示英文名稱是自動翻譯而非官方譯名。
 
 ## 更新步行路網分析資料
 

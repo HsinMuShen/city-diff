@@ -8,18 +8,19 @@ import { analyzeExplorerArea, createRadiusCircle, pointDistanceMeters, type Expl
 import type { CulturalAssetCollection, ExplorerCity, Locale, PopulationAreaCollection, RoadFeatureCollection, TransitCollection, UrbanFormCollection } from '../types'
 
 const baseMapStyle = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
+const baseMapNameLayers = ['waterway_label', 'watername_ocean', 'watername_sea', 'watername_lake', 'watername_lake_line', 'place_hamlet', 'place_suburbs', 'place_villages', 'place_town', 'place_country_2', 'place_country_1', 'place_state', 'place_continent', 'place_city_r6', 'place_city_r5', 'place_city_dot_r7', 'place_city_dot_r4', 'place_city_dot_r2', 'place_city_dot_z7', 'place_capital_dot_z7', 'poi_stadium', 'poi_park', 'roadname_minor', 'roadname_sec', 'roadname_pri', 'roadname_major']
 const parameters = new URLSearchParams(window.location.search)
 const requestedLocale = parameters.get('lang')
 const initialLocale: Locale = requestedLocale === 'en' || requestedLocale === 'zh-TW'
   ? requestedLocale
-  : navigator.language.toLowerCase().startsWith('zh') ? 'zh-TW' : 'en'
+  : 'en'
 
 const copy = {
   en: {
-    title: 'Urban Area Explorer', subtitle: 'Move the study circle to read people, form, mobility, and place at walking scale.', back: 'Map comparison', city: 'Study city', radius: 'Study radius', radiusHelp: 'Drag anywhere inside the circle, or click elsewhere on the map.', overview: 'Overview', people: 'People', built: 'Built form', transit: 'Transit', streets: 'Streets', walking: 'Walking', heritage: 'Heritage', demographics: 'People & households', population: 'Estimated population', density: 'Population density', households: 'Households', residentsKm2: 'residents / km²', ageStructure: 'Age structure', femaleShare: 'Female population', ageHelp: 'Age totals are grouped from five-year bands in the official statistical-area records.', builtForm: 'Solid / open space', builtCoverage: 'Building footprint', mappedBuildings: 'Mapped buildings', openSpace: 'Open area', greenSpace: 'Parks & green space', greenCoverage: 'Mapped green coverage', greenFeatures: 'Mapped green features', transitNetwork: 'Rail & metro network', stations: 'Stations', railLength: 'Rail corridor length', transitModes: 'Mapped modes', noTransit: 'No mapped rail or metro feature appears inside this radius.', areaProfile: 'Street profile', roadLength: 'Street length', namedStreets: 'Named streets', mappedSegments: 'Road segments', streetHierarchy: 'Street hierarchy', streetMix: 'Street mix', roadTypes: 'road types', streetHelp: 'Approximate line length inside the circle, grouped by the current OSM highway class.', walkingNetwork: 'Walking network', walkLength: 'Mapped walk network', pedestrianShare: 'Pedestrian-oriented share', walkHelp: 'Footways, paths, steps, pedestrian streets, and living streets as a share of mapped walking-network length.', surfaces: 'Mapped surfaces', surfaceMix: 'Surface mix', heritageContext: 'Heritage context', registeredPlaces: 'Registered places', nearestPlace: 'Nearest place', noPlaces: 'No registered monument appears inside this radius.', sourceNote: 'Population uses Ministry of the Interior December 2024 small-area records. Streets, buildings, green space, and transit use the stored September 2026 OpenStreetMap snapshot; heritage uses Ministry of Culture records. Circle-edge estimates are approximate.', loading: 'Preparing local datasets…', failed: 'The explorer data could not be loaded.', mapHint: 'Drag the circle or click elsewhere', records: 'features', unknown: 'Unknown', language: 'Language', currentArea: 'Current study area', dataLayers: 'Data lenses', openRecord: 'Open official record', selected: 'inside radius', coordinates: 'Center', meters: 'm', none: 'None', exportCard: 'Export card as PNG', exporting: 'Exporting PNG', exported: 'PNG downloaded', exportFailed: 'PNG export failed', urbanProfile: 'Urban profile', movement: 'Movement & streets', placeContext: 'Place & heritage',
+    title: 'Urban Area Explorer', subtitle: 'Move the study circle to read people, form, mobility, and place at walking scale.', back: 'Map comparison', city: 'Study city', radius: 'Study radius', radiusHelp: 'Drag anywhere inside the circle, or click elsewhere on the map.', overview: 'Overview', people: 'People', built: 'Built form', transit: 'Transit', streets: 'Streets', walking: 'Walking', heritage: 'Heritage', demographics: 'People & households', population: 'Estimated population', density: 'Population density', households: 'Households', residentsKm2: 'residents / km²', ageStructure: 'Age structure', femaleShare: 'Female population', ageHelp: 'Age totals are grouped from five-year bands in the official statistical-area records.', builtForm: 'Solid / open space', builtCoverage: 'Building footprint', mappedBuildings: 'Mapped buildings', openSpace: 'Open area', greenSpace: 'Parks & green space', greenCoverage: 'Mapped green coverage', greenFeatures: 'Mapped green features', transitNetwork: 'Rail & metro network', stations: 'Stations', railLength: 'Rail corridor length', transitModes: 'Mapped modes', noTransit: 'No mapped rail or metro feature appears inside this radius.', areaProfile: 'Street profile', roadLength: 'Street length', namedStreets: 'Named streets', mappedSegments: 'Road segments', streetHierarchy: 'Street hierarchy', streetMix: 'Street mix', roadTypes: 'road types', streetHelp: 'Approximate line length inside the circle, grouped by the current OSM highway class.', walkingNetwork: 'Walking network', walkLength: 'Mapped walk network', pedestrianShare: 'Pedestrian-oriented share', walkHelp: 'Footways, paths, steps, pedestrian streets, and living streets as a share of mapped walking-network length.', surfaces: 'Mapped surfaces', surfaceMix: 'Surface mix', heritageContext: 'Heritage context', heritageHelp: 'English monument names are automated display translations of the official Chinese records.', registeredPlaces: 'Registered places', nearestPlace: 'Nearest place', noPlaces: 'No registered monument appears inside this radius.', sourceNote: 'Population uses Ministry of the Interior December 2024 small-area records. Streets, buildings, green space, and transit use the stored September 2026 OpenStreetMap snapshot; heritage uses Ministry of Culture records with automated English display translations. Circle-edge estimates are approximate.', loading: 'Preparing local datasets…', failed: 'The explorer data could not be loaded.', mapHint: 'Drag the circle or click elsewhere', records: 'features', unknown: 'Unknown', language: 'Language', currentArea: 'Current study area', dataLayers: 'Data lenses', openRecord: 'Open official record', selected: 'inside radius', coordinates: 'Center', meters: 'm', none: 'None', exportCard: 'Export card as PNG', exporting: 'Exporting PNG', exported: 'PNG downloaded', exportFailed: 'PNG export failed', urbanProfile: 'Urban profile', movement: 'Movement & streets', placeContext: 'Place & heritage',
   },
   'zh-TW': {
-    title: '城市範圍探索器', subtitle: '移動研究圓，以步行尺度閱讀人口、都市形態、移動與地方脈絡。', back: '地圖比較', city: '研究城市', radius: '研究半徑', radiusHelp: '拖曳圓內任意位置，或點擊圓外地圖。', overview: '總覽', people: '人口', built: '都市形態', transit: '軌道運輸', streets: '街道', walking: '步行', heritage: '文化資產', demographics: '人口與家戶', population: '推估人口', density: '人口密度', households: '家戶數', residentsKm2: '人 / 平方公里', ageStructure: '年齡結構', femaleShare: '女性人口', ageHelp: '年齡資料由官方最小統計區五歲年齡組彙整。', builtForm: '實體／開放空間', builtCoverage: '建築覆蓋率', mappedBuildings: '建築圖徵', openSpace: '開放空間', greenSpace: '公園與綠地', greenCoverage: '已繪製綠地覆蓋率', greenFeatures: '綠地圖徵', transitNetwork: '鐵路與捷運網路', stations: '車站', railLength: '軌道路廊長度', transitModes: '已繪製系統', noTransit: '這個半徑內沒有已繪製的鐵路或捷運圖徵。', areaProfile: '街道概況', roadLength: '街道長度', namedStreets: '具名街道', mappedSegments: '道路圖徵', streetHierarchy: '街道層級', streetMix: '街道組成', roadTypes: '種道路類型', streetHelp: '估算研究圓內的線段長度，並依目前 OSM highway 類別分組。', walkingNetwork: '步行路網', walkLength: '已繪製步行路網', pedestrianShare: '行人導向占比', walkHelp: '步道、小徑、階梯、行人街與生活街道，占研究圓內步行路網長度的比例。', surfaces: '已標記鋪面', surfaceMix: '鋪面組成', heritageContext: '文化資產脈絡', registeredPlaces: '登錄古蹟', nearestPlace: '最近古蹟', noPlaces: '這個半徑內沒有本資料集的登錄古蹟。', sourceNote: '人口使用內政部 2024 年 12 月最小統計區資料。街道、建築、綠地與軌道運輸使用專案保存的 2026 年 9 月 OpenStreetMap 快照；文化資產使用文化部資料。研究圓邊界估算為近似值。', loading: '正在準備本地資料…', failed: '無法載入探索器資料。', mapHint: '拖曳研究圓，或點擊圓外地圖', records: '筆圖徵', unknown: '未標記', language: '語言', currentArea: '目前研究範圍', dataLayers: '資料視角', openRecord: '開啟官方紀錄', selected: '位於半徑內', coordinates: '中心座標', meters: '公尺', none: '無', exportCard: '匯出卡片 PNG', exporting: '正在匯出 PNG', exported: 'PNG 已下載', exportFailed: 'PNG 匯出失敗', urbanProfile: '都市概況', movement: '移動與街道', placeContext: '地方與文化資產',
+    title: '城市範圍探索器', subtitle: '移動研究圓，以步行尺度閱讀人口、都市形態、移動與地方脈絡。', back: '地圖比較', city: '研究城市', radius: '研究半徑', radiusHelp: '拖曳圓內任意位置，或點擊圓外地圖。', overview: '總覽', people: '人口', built: '都市形態', transit: '軌道運輸', streets: '街道', walking: '步行', heritage: '文化資產', demographics: '人口與家戶', population: '推估人口', density: '人口密度', households: '家戶數', residentsKm2: '人 / 平方公里', ageStructure: '年齡結構', femaleShare: '女性人口', ageHelp: '年齡資料由官方最小統計區五歲年齡組彙整。', builtForm: '實體／開放空間', builtCoverage: '建築覆蓋率', mappedBuildings: '建築圖徵', openSpace: '開放空間', greenSpace: '公園與綠地', greenCoverage: '已繪製綠地覆蓋率', greenFeatures: '綠地圖徵', transitNetwork: '鐵路與捷運網路', stations: '車站', railLength: '軌道路廊長度', transitModes: '已繪製系統', noTransit: '這個半徑內沒有已繪製的鐵路或捷運圖徵。', areaProfile: '街道概況', roadLength: '街道長度', namedStreets: '具名街道', mappedSegments: '道路圖徵', streetHierarchy: '街道層級', streetMix: '街道組成', roadTypes: '種道路類型', streetHelp: '估算研究圓內的線段長度，並依目前 OSM highway 類別分組。', walkingNetwork: '步行路網', walkLength: '已繪製步行路網', pedestrianShare: '行人導向占比', walkHelp: '步道、小徑、階梯、行人街與生活街道，占研究圓內步行路網長度的比例。', surfaces: '已標記鋪面', surfaceMix: '鋪面組成', heritageContext: '文化資產脈絡', heritageHelp: '英文名稱為官方中文紀錄的自動翻譯顯示文字。', registeredPlaces: '登錄古蹟', nearestPlace: '最近古蹟', noPlaces: '這個半徑內沒有本資料集的登錄古蹟。', sourceNote: '人口使用內政部 2024 年 12 月最小統計區資料。街道、建築、綠地與軌道運輸使用專案保存的 2026 年 9 月 OpenStreetMap 快照；文化資產使用文化部資料。研究圓邊界估算為近似值。', loading: '正在準備本地資料…', failed: '無法載入探索器資料。', mapHint: '拖曳研究圓，或點擊圓外地圖', records: '筆圖徵', unknown: '未標記', language: '語言', currentArea: '目前研究範圍', dataLayers: '資料視角', openRecord: '開啟官方紀錄', selected: '位於半徑內', coordinates: '中心座標', meters: '公尺', none: '無', exportCard: '匯出卡片 PNG', exporting: '正在匯出 PNG', exported: 'PNG 已下載', exportFailed: 'PNG 匯出失敗', urbanProfile: '都市概況', movement: '移動與街道', placeContext: '地方與文化資產',
   },
 } as const
 
@@ -62,6 +63,7 @@ const streetColorExpression: ExpressionSpecification = [
 const formatLength = (meters: number) => meters >= 1000 ? `${(meters / 1000).toFixed(1)} km` : `${Math.round(meters)} m`
 const formatPercent = (value: number) => `${Math.round(value * 100)}%`
 const formatNumber = (value: number) => Math.round(value).toLocaleString()
+const formatDataLabel = (value: string) => value.replaceAll('_', ' ').replace(/\b\w/g, (letter) => letter.toUpperCase())
 
 function Metric({ label, value, detail }: { label: string; value: string; detail?: string }) {
   return <div className="explorer-metric"><span>{label}</span><strong>{value}</strong>{detail && <small>{detail}</small>}</div>
@@ -168,6 +170,16 @@ export function ExplorerPage() {
     document.documentElement.lang = locale
     document.title = locale === 'en' ? 'City Diff Explorer' : 'City Diff 城市範圍探索器'
   }, [locale])
+
+  const applyMapLanguage = () => {
+    const map = mapRef.current?.getMap()
+    if (!map?.isStyleLoaded()) return
+    baseMapNameLayers.forEach((layerId) => {
+      if (map.getLayer(layerId)) map.setLayoutProperty(layerId, 'text-field', locale === 'en' ? '{name_en}' : '{name}')
+    })
+  }
+
+  useEffect(() => { applyMapLanguage() }, [locale])
 
   useEffect(() => {
     let cancelled = false
@@ -289,7 +301,7 @@ export function ExplorerPage() {
         <a className="explorer-back" href={comparisonHref}><ArrowLeft size={16} /><span>{text.back}</span></a>
         <div className="explorer-brand"><span><Compass size={18} /></span><strong>City Diff</strong><em>Explorer</em></div>
         <label className="explorer-city-select"><small>{text.city}</small><select value={city.id} onChange={(event) => changeCity(findExplorerCity(event.target.value))}>{explorerCities.map((item) => <option key={item.id} value={item.id}>{locale === 'en' ? item.nameEn : item.name}</option>)}</select><ChevronDown size={14} /></label>
-        <button className="explorer-language" onClick={changeLocale} aria-label={text.language}><Languages size={16} /><span>{locale === 'en' ? '中' : 'EN'}</span></button>
+        <button className="explorer-language" onClick={changeLocale} aria-label={text.language}><Languages size={16} /><span>{locale === 'en' ? 'ZH' : 'EN'}</span></button>
       </header>
 
       <main className="explorer-workspace">
@@ -298,6 +310,7 @@ export function ExplorerPage() {
             ref={mapRef}
             initialViewState={{ longitude: city.center[0], latitude: city.center[1], zoom: city.zoom - .6, bearing: 0, pitch: 0 }}
             mapStyle={baseMapStyle}
+            onLoad={applyMapLanguage}
             attributionControl={false}
             minZoom={12}
             maxZoom={19}
@@ -405,7 +418,7 @@ export function ExplorerPage() {
                   <Metric label={text.railLength} value={formatLength(analysis.railLengthMeters)} />
                   <Metric label={text.transitModes} value={String(analysis.transitModes.length)} />
                 </div>
-                {analysis.transitModes.length ? <div className="explorer-mode-list">{analysis.transitModes.map((mode) => <span key={mode}>{mode.replace('_', ' ')}</span>)}</div> : <p className="explorer-empty">{text.noTransit}</p>}
+                {analysis.transitModes.length ? <div className="explorer-mode-list">{analysis.transitModes.map((mode) => <span key={mode}>{formatDataLabel(mode)}</span>)}</div> : <p className="explorer-empty">{text.noTransit}</p>}
               </section>
 
               <h2 className="explorer-group-heading"><span>02</span>{text.movement}</h2>
@@ -441,17 +454,17 @@ export function ExplorerPage() {
               <section className="explorer-card surfaces-card">
                 <CardHeader title={text.surfaceMix} index="10" slug="surface-mix" exportState={exportState} onExport={exportCard} labels={text} />
                 <SurfaceMatrix segments={analysis.surfaces} />
-                <div className="explorer-surface-list">{analysis.surfaces.slice(0, 4).map((item) => <span key={item.label}><i style={{ background: surfaceColors[item.label] ?? '#a29a8e' }} />{item.label === 'unknown' ? text.unknown : item.label}<strong>{formatPercent(item.share)}</strong></span>)}</div>
+                <div className="explorer-surface-list">{analysis.surfaces.slice(0, 4).map((item) => <span key={item.label}><i style={{ background: surfaceColors[item.label] ?? '#a29a8e' }} />{item.label === 'unknown' ? text.unknown : formatDataLabel(item.label)}<strong>{formatPercent(item.share)}</strong></span>)}</div>
               </section>
 
               <h2 className="explorer-group-heading"><span>03</span>{text.placeContext}</h2>
               <section className={lens === 'heritage' ? 'explorer-card heritage-card wide highlighted' : 'explorer-card heritage-card wide'}>
-                <CardHeader title={text.heritageContext} index="11" slug="heritage-context" exportState={exportState} onExport={exportCard} labels={text} />
+                <CardHeader title={text.heritageContext} description={text.heritageHelp} index="11" slug="heritage-context" exportState={exportState} onExport={exportCard} labels={text} />
                 <div className="explorer-dual-metric">
                   <Metric label={text.registeredPlaces} value={String(analysis.culturalAssets.features.length)} />
                   <Metric label={text.nearestPlace} value={analysis.nearestAssetMeters === null ? text.none : formatLength(analysis.nearestAssetMeters)} />
                 </div>
-                {analysis.culturalAssets.features.length === 0 ? <p>{text.noPlaces}</p> : <div className="explorer-place-list">{analysis.culturalAssets.features.slice(0, 3).map((asset) => <a key={asset.properties.case_id} href={asset.properties.official_url} target="_blank" rel="noreferrer"><Landmark size={14} /><span><strong>{asset.properties.name}</strong><small>{asset.properties.classification} · {asset.properties.district}</small></span></a>)}</div>}
+                {analysis.culturalAssets.features.length === 0 ? <p>{text.noPlaces}</p> : <div className="explorer-place-list">{analysis.culturalAssets.features.slice(0, 3).map((asset) => <a key={asset.properties.case_id} href={asset.properties.official_url} target="_blank" rel="noreferrer"><Landmark size={14} /><span><strong>{locale === 'en' ? asset.properties.name_en ?? asset.properties.name : asset.properties.name}</strong><small>{locale === 'en' ? asset.properties.classification_en ?? asset.properties.classification : asset.properties.classification} · {locale === 'en' ? asset.properties.district_en ?? asset.properties.district : asset.properties.district}</small></span></a>)}</div>}
               </section>
             </div>
             <footer className="explorer-note"><Ruler size={14} /><p>{text.sourceNote}</p></footer>

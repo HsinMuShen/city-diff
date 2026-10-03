@@ -109,6 +109,9 @@ export interface CulturalAssetProperties {
   official_url: string
   image_url: string | null
   source: '文化部文化資產局'
+  name_en?: string
+  classification_en?: string
+  district_en?: string
 }
 
 export type CulturalAssetFeature = Feature<Point, CulturalAssetProperties>
