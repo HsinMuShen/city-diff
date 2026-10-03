@@ -1,0 +1,418 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>City Diff — Portfolio Case Study</title>
+  <style>
+    @page { size: 13.333333in 7.5in; margin: 0; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: #d8d3c9; }
+    body { color: #292923; font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", Arial, sans-serif; }
+    .page {
+      --paper: #f7f4ec;
+      --soft: #e9e3d8;
+      --ink: #292923;
+      --muted: #716a60;
+      --line: #cfc6b8;
+      --red: #8b3f32;
+      --brass: #9b7a3c;
+      --sage: #536b5c;
+      position: relative;
+      width: 13.333333in;
+      height: 7.5in;
+      padding: .48in .58in .43in;
+      overflow: hidden;
+      page-break-after: always;
+      background: var(--paper);
+    }
+    .page:last-child { page-break-after: auto; }
+    h1, h2, h3, p { margin: 0; }
+    h1, h2, .serif { font-family: "Songti TC", "Noto Serif TC", Georgia, serif; }
+    h1 { font-size: 46px; line-height: 1.04; letter-spacing: -.045em; }
+    h2 { max-width: 860px; font-size: 31px; line-height: 1.12; letter-spacing: -.035em; }
+    h3 { font-size: 14px; line-height: 1.35; }
+    p { color: var(--muted); font-size: 13px; line-height: 1.65; }
+    .eyebrow { color: var(--red); font: 700 9px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .14em; text-transform: uppercase; }
+    .page-title { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 26px; }
+    .page-title > p { width: 310px; padding-bottom: 2px; font-size: 11px; line-height: 1.55; }
+    .folio { position: absolute; right: .58in; bottom: .25in; color: #92897c; font: 600 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+    .project-mark { position: absolute; left: .58in; bottom: .25in; color: #92897c; font: 600 8px ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: .08em; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 17px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .rule { height: 1px; background: var(--line); }
+    .tag { display: inline-flex; align-items: center; min-height: 24px; padding: 0 9px; color: #4d4941; background: #eee9df; border: 1px solid #dbd3c7; border-radius: 99px; font-size: 9px; font-weight: 650; }
+    .shot { display: block; width: 100%; border: 1px solid rgba(57, 50, 42, .18); box-shadow: 0 14px 34px rgba(43, 37, 30, .14); }
+    .caption { margin-top: 8px; color: #847c71; font: 500 8px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+    /* Cover */
+    .cover { padding: 0; color: #fff; background: #252a25; }
+    .cover-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 42%; filter: saturate(.75) contrast(1.03); }
+    .cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgba(28, 31, 28, .94) 0%, rgba(28,31,28,.84) 34%, rgba(28,31,28,.18) 72%, rgba(28,31,28,.32) 100%); }
+    .cover-copy { position: absolute; z-index: 2; top: .72in; left: .7in; width: 5.3in; }
+    .cover .eyebrow { color: #d9bc82; }
+    .cover h1 { margin-top: 24px; font-size: 67px; color: #fbfaf6; }
+    .cover h1 span { display: block; margin-top: 13px; color: #ddd5c8; font: 500 18px/1.35 -apple-system, BlinkMacSystemFont, "Noto Sans TC", sans-serif; letter-spacing: -.02em; }
+    .cover-lede { width: 450px; margin-top: 29px; color: rgba(255,255,255,.78); font-size: 15px; line-height: 1.75; }
+    .cover-meta { position: absolute; z-index: 2; left: .7in; right: .7in; bottom: .47in; display: flex; align-items: flex-end; justify-content: space-between; padding-top: 13px; border-top: 1px solid rgba(255,255,255,.35); }
+    .cover-meta p { color: rgba(255,255,255,.75); font-size: 10px; line-height: 1.5; }
+    .cover-meta strong { display: block; color: #fff; font-size: 12px; }
+
+    /* Motivation */
+    .timeline { height: 4.1in; display: grid; grid-template-columns: 1fr 90px 1fr; align-items: stretch; margin-top: 26px; }
+    .timeline-card { padding: 28px; border: 1px solid var(--line); background: #fbfaf6; }
+    .timeline-card.future { background: #343832; border-color: #343832; }
+    .timeline-card .year { color: var(--brass); font: 700 42px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.08em; }
+    .timeline-card h3 { margin-top: 24px; font-size: 20px; }
+    .timeline-card p { margin-top: 12px; }
+    .timeline-card.future h3 { color: #fff; }
+    .timeline-card.future p { color: #cfcac0; }
+    .timeline-arrow { display: grid; place-items: center; color: var(--red); font-size: 33px; }
+    .question { margin-top: 22px; padding: 17px 22px; border-left: 3px solid var(--red); background: #eee8dc; font: 600 17px/1.5 "Songti TC", Georgia, serif; }
+
+    /* Evidence */
+    .evidence-card { height: 3.35in; padding: 24px; background: #fff; border-top: 5px solid; box-shadow: 0 9px 22px rgba(43, 37, 30, .07); }
+    .evidence-card.observed { border-color: var(--sage); }
+    .evidence-card.derived { border-color: var(--brass); }
+    .evidence-card.unknown { border-color: var(--red); }
+    .evidence-number { color: #aaa196; font: 600 10px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .evidence-card h3 { margin-top: 29px; font: 600 25px/1.1 "Songti TC", Georgia, serif; }
+    .evidence-card p { margin-top: 12px; }
+    .evidence-card ul { margin: 19px 0 0; padding: 15px 0 0 16px; border-top: 1px solid #e5dfd6; color: #5d574f; font-size: 10px; line-height: 1.85; }
+    .source-row { display: flex; gap: 8px; margin-top: 22px; flex-wrap: wrap; }
+
+    /* Screens */
+    .screen-layout { display: grid; grid-template-columns: minmax(0, 1fr) 2.65in; gap: 23px; align-items: start; }
+    .screen-layout .shot { height: 5.23in; object-fit: cover; object-position: center; }
+    .side-notes { display: grid; gap: 13px; }
+    .note { padding: 15px 15px 14px; background: #eee9df; border-left: 2px solid var(--brass); }
+    .note strong { display: block; color: var(--ink); font-size: 12px; }
+    .note p { margin-top: 5px; font-size: 10px; line-height: 1.5; }
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .mini-stat { padding: 14px 10px; text-align: left; background: #343832; }
+    .mini-stat strong { display: block; color: #fff; font: 650 20px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .mini-stat span { display: block; margin-top: 7px; color: #c9c2b6; font-size: 8px; line-height: 1.35; }
+
+    /* Algorithm */
+    .algorithm-layout { display: grid; grid-template-columns: 1.08fr .92fr; gap: 32px; }
+    .algorithm-canvas { padding: 23px; background: #343832; color: #fff; }
+    .algorithm-canvas svg { width: 100%; height: 260px; display: block; }
+    .algorithm-canvas p { margin-top: 12px; color: #c9c4ba; font-size: 10px; }
+    .steps { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .step { min-height: 104px; padding: 15px; border: 1px solid var(--line); background: #fbfaf6; }
+    .step span { color: var(--red); font: 700 9px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .step strong { display: block; margin-top: 8px; font-size: 11px; }
+    .step p { margin-top: 5px; font-size: 9px; line-height: 1.45; }
+    .algorithm-summary { display: flex; align-items: baseline; justify-content: space-between; margin-top: 13px; padding: 13px 15px; background: #e8e2d7; }
+    .algorithm-summary strong { color: var(--red); font: 700 22px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .algorithm-summary span { color: #665f56; font-size: 9px; }
+
+    /* Results */
+    .results-layout { display: grid; grid-template-columns: 1fr 3.8in; gap: 30px; align-items: stretch; }
+    .chart-panel { height: 4.85in; padding: 19px; background: #fff; border: 1px solid var(--line); }
+    .chart-panel img { width: 100%; height: 100%; object-fit: contain; }
+    .big-numbers { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .big-number { padding: 22px 17px; background: #eae4d9; }
+    .big-number.dark { color: #fff; background: #343832; }
+    .big-number strong { display: block; font: 700 36px/1 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.06em; }
+    .big-number span { display: block; margin-top: 9px; color: #686158; font-size: 9px; line-height: 1.45; }
+    .big-number.dark span { color: #c9c2b6; }
+    .results-note { margin-top: 10px; padding: 16px; border: 1px solid var(--line); }
+    .results-note strong { font-size: 12px; }
+    .results-note p { margin-top: 6px; font-size: 10px; }
+
+    /* Sensitivity */
+    .sensitivity-layout { display: grid; grid-template-columns: 1.25fr .75fr; gap: 28px; }
+    .range-callout { height: 4.75in; display: flex; flex-direction: column; justify-content: space-between; padding: 26px; color: #fff; background: #343832; }
+    .range-callout .range { color: #d7b879; font: 700 62px/.95 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.09em; }
+    .range-callout h3 { margin-top: 16px; color: #fff; font-size: 17px; }
+    .range-callout p { margin-top: 11px; color: #ccc6bb; }
+    .warning { padding-top: 18px; border-top: 1px solid rgba(255,255,255,.22); }
+    .warning strong { color: #fff; font-size: 12px; }
+    .warning p { margin-top: 5px; font-size: 10px; }
+
+    /* Review */
+    .review-layout { display: grid; grid-template-columns: 1fr 3.15in; gap: 25px; }
+    .review-layout .shot { height: 5.18in; object-fit: cover; object-position: center; }
+    .review-list { display: grid; gap: 12px; }
+    .review-item { position: relative; padding: 16px 15px 16px 43px; background: #eee9df; }
+    .review-item b { position: absolute; top: 16px; left: 15px; width: 19px; height: 19px; display: grid; place-items: center; color: #fff; background: var(--red); border-radius: 50%; font: 700 8px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .review-item strong { display: block; font-size: 11px; }
+    .review-item p { margin-top: 4px; font-size: 9px; line-height: 1.45; }
+
+    /* Explorer */
+    .explorer-page-layout { position: relative; }
+    .explorer-page-layout .shot { width: 10.18in; height: 5.02in; object-fit: cover; object-position: center top; }
+    .city-stack { position: absolute; right: 0; top: 24px; width: 2.42in; padding: 18px; background: #343832; color: #fff; box-shadow: 0 15px 30px rgba(43,37,30,.2); }
+    .city-stack h3 { font: 600 18px/1.2 "Songti TC", Georgia, serif; }
+    .cities { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 16px; }
+    .cities span { padding: 7px 6px; color: #ded8cd; border-bottom: 1px solid rgba(255,255,255,.13); font-size: 9px; }
+    .city-stack p { margin-top: 17px; color: #bfb9ae; font-size: 9px; line-height: 1.5; }
+    .lens-row { display: flex; gap: 8px; margin-top: 12px; }
+
+    /* Mobile */
+    .mobile-layout { display: grid; grid-template-columns: 3.2in 1fr; gap: 42px; align-items: center; }
+    .phone { width: 2.42in; height: 5.1in; margin: 0 auto; padding: 7px; overflow: hidden; background: #1f211e; border-radius: 26px; box-shadow: 0 18px 32px rgba(43,37,30,.22); }
+    .phone img { width: 100%; height: 100%; object-fit: cover; object-position: top; border-radius: 20px; }
+    .mobile-copy h3 { margin-top: 8px; font: 600 25px/1.2 "Songti TC", Georgia, serif; }
+    .mobile-copy > p { max-width: 570px; margin-top: 12px; }
+    .feature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; }
+    .feature { min-height: 100px; padding: 14px; background: #eee9df; border-top: 3px solid var(--sage); }
+    .feature strong { display: block; font-size: 10px; }
+    .feature p { margin-top: 7px; font-size: 9px; line-height: 1.45; }
+    .export-strip { margin-top: 17px; padding: 15px 17px; display: flex; align-items: center; justify-content: space-between; color: #fff; background: #343832; }
+    .export-strip strong { font-size: 11px; }
+    .export-strip span { color: #c7c1b6; font-size: 9px; }
+
+    /* Closing */
+    .closing { color: #fff; background: #30342f; }
+    .closing .eyebrow { color: #d2b576; }
+    .closing h2 { max-width: 980px; margin-top: 27px; color: #fff; font-size: 52px; line-height: 1.08; }
+    .closing h2 em { color: #d5b978; font-style: normal; }
+    .closing-grid { display: grid; grid-template-columns: 1.25fr 1fr 1fr; gap: 22px; margin-top: 42px; }
+    .closing-card { padding-top: 17px; border-top: 1px solid rgba(255,255,255,.28); }
+    .closing-card span { color: #d5b978; font: 600 9px ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .closing-card h3 { margin-top: 12px; color: #fff; font-size: 14px; }
+    .closing-card p { margin-top: 8px; color: #c7c2b8; font-size: 10px; }
+    .closing-arc { position: absolute; right: -.9in; bottom: -1.05in; width: 4.8in; height: 4.8in; border: 1px solid rgba(213,185,120,.35); border-radius: 50%; }
+    .closing-arc::after { content: ""; position: absolute; inset: .55in; border: 1px dashed rgba(213,185,120,.22); border-radius: 50%; }
+    .closing .project-mark, .closing .folio { color: #aaa49a; }
+
+    @media print {
+      html, body { background: transparent; }
+      .page { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+    }
+  </style>
+</head>
+<body>
+  <section class="page cover">
+    <img class="cover-image" src="assets/candidate-analysis.png" alt="City Diff interface" />
+    <div class="cover-copy">
+      <div class="eyebrow">Urban evidence · computational research · interface design</div>
+      <h1>City Diff<span>From Residual Space to Urban Evidence</span></h1>
+      <p class="cover-lede">一套比較歷史圖資、現代路網與都市形態的研究工具。它用演算法提出值得檢查的問題，也清楚標示資料還不能證明的事情。</p>
+    </div>
+    <div class="cover-meta">
+      <p><strong>Michael Shen · Project Case Study</strong>Research, product strategy, interaction design & engineering</p>
+      <p style="text-align:right"><strong>Tainan, Taiwan · 2026</strong>Historical maps × OSM × human review</p>
+    </div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">01 · Motivation</div><h2>從提出空間介入，轉向檢查「破碎」如何被判斷</h2></div>
+      <p>City Diff 延續 2021 年建築論文對臺南殘餘空間的關注，但把設計問題重新寫成可測試、可反駁的研究問題。</p>
+    </div>
+    <div class="timeline">
+      <article class="timeline-card">
+        <div class="year">2021</div>
+        <h3>先提出修補方案</h3>
+        <p>《不完美的城市》將畸零地與殘餘空間理解為不同城市系統重疊的結果，並提出分散式微型介入。</p>
+        <div class="source-row"><span class="tag">Architecture thesis</span><span class="tag">Spatial intervention</span></div>
+      </article>
+      <div class="timeline-arrow">→</div>
+      <article class="timeline-card future">
+        <div class="year">2026</div>
+        <h3>先檢查證據如何成立</h3>
+        <p>把形態直覺轉成演算法，再讓歷史圖、資料來源與人工判讀共同檢查每個候選位置。</p>
+        <div class="source-row"><span class="tag">Computational research</span><span class="tag">Human in the loop</span></div>
+      </article>
+    </div>
+    <div class="question">一個人機協作的空間分析工具，能否提出可檢查的都市斷裂假設，同時避免把計算代理指標誤認為城市事實？</div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">02 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">02 · Evidence model</div><h2>介面把紀錄、計算與主張分成三層</h2></div>
+      <p>這不是文案分類，而是整個產品的倫理框架：使用者必須能看見系統知道什麼、如何推得，以及仍缺少什麼。</p>
+    </div>
+    <div class="grid-3">
+      <article class="evidence-card observed"><div class="evidence-number">01 · OBSERVED</div><h3>觀察資料</h3><p>來源直接提供、可追溯的紀錄。</p><ul><li>中央研究院歷史圖磚</li><li>OpenStreetMap 道路中心線</li><li>文化部登錄古蹟點位</li></ul></article>
+      <article class="evidence-card derived"><div class="evidence-number">02 · DERIVED</div><h3>程式推導</h3><p>可由固定輸入與參數重現的結果。</p><ul><li>道路長度與端點距離</li><li>方向相似度與最短路徑</li><li>候選位置與參數敏感度</li></ul></article>
+      <article class="evidence-card unknown"><div class="evidence-number">03 · UNKNOWN</div><h3>尚未知道</h3><p>目前資料不能支持的主張。</p><ul><li>歷史因果與現況使用</li><li>土地權屬與公共通行</li><li>介入價值與施工可行性</li></ul></article>
+    </div>
+    <div class="source-row"><span class="tag">4 historical city packs</span><span class="tag">9 explorer cities</span><span class="tag">Source timestamps</span><span class="tag">SHA-256 provenance</span><span class="tag">Explicit limitations</span></div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">03 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">03 · Historical comparison</div><h2>同一個座標，對照四個歷史時間切片與現代路網</h2></div>
+      <p>滑動中線保留空間方向感；時間軸把每張圖的年代、圖種與來源放在同一個工作區。</p>
+    </div>
+    <div class="screen-layout">
+      <div><img class="shot" src="assets/compare-overview.png" alt="Historical map comparison" /><div class="caption">TAINAN · 1953 CADASTRAL MAP ↔ PRESENT-DAY OPENSTREETMAP</div></div>
+      <div class="side-notes">
+        <div class="note"><strong>1953 · 地籍圖</strong><p>作為戰後早期街廓與地塊關係的第一個時間切片。</p></div>
+        <div class="note"><strong>1970s · 地形圖</strong><p>觀察道路、街廓與建成紋理，不把它當作法定界址。</p></div>
+        <div class="note"><strong>1984 · 市街圖</strong><p>比較都市道路擴張後的街道結構。</p></div>
+        <div class="note"><strong>2016 · 地籍影像</strong><p>提供較新的比較切片，但仍不是即時法律資料。</p></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">04 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">04 · Street investigation</div><h2>從一條道路進入可追溯的研究流程</h2></div>
+      <p>使用者選擇真實道路後，介面先提供幾何摘要，再把歷史影像、文化脈絡與候選位置放進同一個查核流程。</p>
+    </div>
+    <div class="screen-layout">
+      <div><img class="shot" src="assets/road-analysis.png" alt="Street analysis" /><div class="caption">CASE · MINSHENG ROAD SECTION 2 · TAINAN</div></div>
+      <div class="side-notes">
+        <div class="stat-row"><div class="mini-stat"><strong>2.67</strong><span>km study-area length</span></div><div class="mini-stat"><strong>11</strong><span>OSM segments</span></div><div class="mini-stat"><strong>27</strong><span>heritage records within 500 m</span></div></div>
+        <div class="note"><strong>先讀證據摘要</strong><p>把可支持的訊號與不能推出的結論放在同一個視野。</p></div>
+        <div class="note"><strong>再回到地圖判讀</strong><p>橘色帶只提供視覺方向，不宣稱是道路邊界或歷史因果。</p></div>
+        <div class="note"><strong>最後進入人工查核</strong><p>候選位置、資料快照、歷史圖層與觀察紀錄一起保存。</p></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">05 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">05 · Computational method</div><h2>把形態直覺寫成可以被質疑的幾何規則</h2></div>
+      <p>演算法不是替城市下判斷，而是把 4,800 段步行路網縮小成值得回到歷史圖檢查的位置。</p>
+    </div>
+    <div class="algorithm-layout">
+      <div class="algorithm-canvas">
+        <svg viewBox="0 0 560 280" aria-label="Endpoint heuristic diagram">
+          <rect x="0" y="0" width="560" height="280" fill="#343832" />
+          <path d="M-20 205 C130 165 245 176 590 92" fill="none" stroke="#8b3f32" stroke-width="24" opacity=".18" />
+          <path d="M-20 205 C130 165 245 176 590 92" fill="none" stroke="#c56f55" stroke-width="5" />
+          <path d="M88 30 L128 84 L155 132" fill="none" stroke="#97aa9a" stroke-width="5" />
+          <path d="M344 250 L322 208 L305 170" fill="none" stroke="#97aa9a" stroke-width="5" />
+          <path d="M475 242 L431 202 L403 157" fill="none" stroke="#97aa9a" stroke-width="5" />
+          <circle cx="155" cy="132" r="9" fill="#d5b978" stroke="#fff" stroke-width="3" />
+          <circle cx="305" cy="170" r="9" fill="#d5b978" stroke="#fff" stroke-width="3" />
+          <circle cx="403" cy="157" r="9" fill="#d5b978" stroke="#fff" stroke-width="3" />
+          <path d="M155 132 L177 154" stroke="#fff" stroke-width="2" stroke-dasharray="5 5" />
+          <path d="M305 170 L290 154" stroke="#fff" stroke-width="2" stroke-dasharray="5 5" />
+          <path d="M403 157 L395 139" stroke="#fff" stroke-width="2" stroke-dasharray="5 5" />
+          <text x="24" y="252" fill="#c9c4ba" font-size="12" font-family="monospace">SELECTED ROAD</text>
+          <text x="176" y="117" fill="#d5b978" font-size="12" font-family="monospace">ENDPOINT</text>
+          <text x="324" y="204" fill="#c9c4ba" font-size="11" font-family="monospace">DISTANCE + ALIGNMENT</text>
+        </svg>
+        <p>輸出名稱刻意使用 morphology candidate，而不是「消失巷弄」；命名本身必須保留被反駁的空間。</p>
+      </div>
+      <div>
+        <div class="steps">
+          <div class="step"><span>01</span><strong>建立路網圖</strong><p>以 8 公尺容差合併近接節點。</p></div>
+          <div class="step"><span>02</span><strong>尋找端點</strong><p>保留 degree = 1 且不在裁切邊界的節點。</p></div>
+          <div class="step"><span>03</span><strong>量測距離</strong><p>端點距選定道路需為 3–55 公尺。</p></div>
+          <div class="step"><span>04</span><strong>比較方向</strong><p>朝向道路的 cosine alignment ≥ 0.35。</p></div>
+          <div class="step"><span>05</span><strong>排除重複</strong><p>12 公尺內只保留方向分數較高者。</p></div>
+          <div class="step"><span>06</span><strong>交給人查核</strong><p>回到歷史圖與現況記錄連接是否可見。</p></div>
+        </div>
+        <div class="algorithm-summary"><span>4,800 network segments</span><strong>→ 379</strong><span>unique endpoint sites</span></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">06 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">06 · Study scale</div><h2>全區掃描，而不是只挑最好看的案例</h2></div>
+      <p>相同規則批次分析臺南研究框內全部 401 條具名道路，並保留零結果作為控制案例。</p>
+    </div>
+    <div class="results-layout">
+      <div class="chart-panel"><img src="assets/tainan-road-ranking.svg" alt="Tainan road candidate ranking" /></div>
+      <div>
+        <div class="big-numbers">
+          <div class="big-number dark"><strong>401</strong><span>具名道路被完整分析</span></div>
+          <div class="big-number"><strong>193</strong><span>至少出現一個形態或連通訊號</span></div>
+          <div class="big-number"><strong>379</strong><span>獨立端點位置</span></div>
+          <div class="big-number"><strong>30</strong><span>城市縫合候選配對</span></div>
+        </div>
+        <div class="results-note"><strong>Count is not value.</strong><p>排名表示演算法對哪些道路提出較多問題，不代表公共價值、歷史重要性或投資優先序。</p></div>
+        <div class="results-note"><strong>Zero is also a result.</strong><p>成功路在基準參數下沒有候選。這不表示沒有都市影響，只表示目前代理指標沒有發現指定形態。</p></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">07 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">07 · Sensitivity audit</div><h2>參數不是中性的設定，而是研究者的空間立場</h2></div>
+      <p>48 組參數組合測試節點容差、搜尋距離與方向門檻；結果差距揭露模型的不穩定性。</p>
+    </div>
+    <div class="sensitivity-layout">
+      <div class="chart-panel"><img src="assets/tainan-sensitivity.svg" alt="Sensitivity analysis" /></div>
+      <div class="range-callout">
+        <div><div class="range">27<br>—270</div><h3>同一批道路，候選數相差十倍</h3><p>搜尋距離的影響最大。55 公尺不是客觀真理，而是系統理解「與道路有關」的空間尺度。</p></div>
+        <div class="warning"><strong>No ground truth → robustness, not accuracy.</strong><p>這不是準確率測試。它檢查輸出對研究選擇有多敏感，並要求介面公開這些選擇。</p></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">08 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">08 · Human review</div><h2>演算法縮小搜尋範圍，人負責判讀與留下責任紀錄</h2></div>
+      <p>每個候選保留資料快照、參數依據、歷史圖版本、人工觀察與仍待確認的具體問題。</p>
+    </div>
+    <div class="review-layout">
+      <div><img class="shot" src="assets/review-workflow.png" alt="Candidate review workflow" /><div class="caption">CANDIDATE · OSM ENDPOINT → HISTORICAL IMAGE → HUMAN REVIEW</div></div>
+      <div class="review-list">
+        <div class="review-item"><b>1</b><strong>定位候選</strong><p>記錄端點座標、距離與方向分數。</p></div>
+        <div class="review-item"><b>2</b><strong>交叉比較</strong><p>在相同座標檢查歷史圖與現代路網。</p></div>
+        <div class="review-item"><b>3</b><strong>記錄觀察</strong><p>分開寫下看見的內容、引用來源與未解問題。</p></div>
+        <div class="review-item"><b>4</b><strong>保存快照</strong><p>用時間與 SHA-256 辨識資料是否已更新。</p></div>
+        <div class="review-item"><b>5</b><strong>輸出可審查案例</strong><p>匯出 JSON 或 Markdown，讓推論可以被他人檢查。</p></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">09 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">09 · Area Explorer</div><h2>把方法擴展成九個城市的步行尺度閱讀工具</h2></div>
+      <p>移動研究圓即可重新計算街道層級、步行路網、鋪面標記與文化資產，不需要預先挑選道路。</p>
+    </div>
+    <div class="explorer-page-layout">
+      <img class="shot" src="assets/explorer-desktop.png" alt="Urban area explorer" />
+      <aside class="city-stack">
+        <h3>9 cities<br>1 shared method</h3>
+        <div class="cities"><span>臺南</span><span>高雄</span><span>臺中</span><span>臺北</span><span>新北</span><span>桃園</span><span>新竹</span><span>嘉義</span><span>基隆</span></div>
+        <p>四個城市同時具備歷史圖層；五個新增城市使用相同的 OSM 與文化資產分析方法。</p>
+        <div class="lens-row"><span class="tag">Street mix</span><span class="tag">Walking</span></div>
+      </aside>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">10 / 12</div>
+  </section>
+
+  <section class="page">
+    <div class="page-title">
+      <div><div class="eyebrow">10 · Responsive delivery</div><h2>同一套研究工具，適應桌面判讀與行動瀏覽</h2></div>
+      <p>行動版維持可拖曳研究圓、清楚的範圍控制與單欄卡片；桌面版則保留地圖與分析並讀。</p>
+    </div>
+    <div class="mobile-layout">
+      <div class="phone"><img src="assets/explorer-mobile.png" alt="Mobile explorer" /></div>
+      <div class="mobile-copy">
+        <div class="eyebrow">Mobile UX</div><h3>縮小畫面，不縮小決策所需資訊</h3><p>研究範圍、資料視角與關鍵數值維持在第一屏附近；觸控目標放大，卡片改成單欄，地圖仍可直接拖曳研究圓。</p>
+        <div class="feature-grid">
+          <div class="feature"><strong>30% mobile sheet</strong><p>道路選取後保留地圖視野，使用者可再向上展開。</p></div>
+          <div class="feature"><strong>6 profile cards</strong><p>範圍概況、街道組成、步行路網、層級、鋪面與文化資產。</p></div>
+          <div class="feature"><strong>Real-time recompute</strong><p>城市、圓心與半徑改變時，所有指標同步更新。</p></div>
+        </div>
+        <div class="export-strip"><strong>每張卡片可匯出 2× PNG</strong><span>city · study area · radius · current values</span></div>
+      </div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">11 / 12</div>
+  </section>
+
+  <section class="page closing">
+    <div class="closing-arc"></div>
+    <div class="eyebrow">Conclusion · design position</div>
+    <h2><em>Detected</em> is not the same as <em>proven.</em><br>好的城市運算，應該讓人看見下一步還需要協商什麼。</h2>
+    <div class="closing-grid">
+      <div class="closing-card"><span>WHAT I BUILT</span><h3>一套可操作的 urban evidence interface</h3><p>整合歷史圖、現代路網、文化資產、候選演算法、人工查核與多城市 Explorer。</p></div>
+      <div class="closing-card"><span>WHAT I LEARNED</span><h3>不確定性也需要被設計</h3><p>參數、資料缺口與零結果都必須被保留，否則漂亮的介面只會放大虛假的確定性。</p></div>
+      <div class="closing-card"><span>WHAT COMES NEXT</span><h3>從幾何候選走向現地與治理</h3><p>下一階段需要加入向量地籍、現場觀察、地方知識、通行權與治理流程。</p></div>
+    </div>
+    <div class="project-mark">CITY DIFF · PORTFOLIO CASE STUDY</div><div class="folio">12 / 12</div>
+  </section>
+</body>
+</html>
