@@ -1,0 +1,62 @@
+city,city_id,highway_class,segments,length_km
+Tainan,tainan,living_street,16,2.204
+Tainan,tainan,pedestrian,13,2.5
+Tainan,tainan,primary,45,9.138
+Tainan,tainan,residential,460,85.194
+Tainan,tainan,secondary,51,6.456
+Tainan,tainan,tertiary,346,70.624
+Kaohsiung,kaohsiung,living_street,9,3.603
+Kaohsiung,kaohsiung,pedestrian,31,3.62
+Kaohsiung,kaohsiung,primary,36,6.949
+Kaohsiung,kaohsiung,residential,432,109.745
+Kaohsiung,kaohsiung,secondary,43,13.409
+Kaohsiung,kaohsiung,tertiary,149,34.804
+Taichung,taichung,living_street,1,0.225
+Taichung,taichung,pedestrian,9,0.924
+Taichung,taichung,primary,91,15.467
+Taichung,taichung,residential,379,89.736
+Taichung,taichung,secondary,126,20.741
+Taichung,taichung,tertiary,90,19.188
+Taichung,taichung,unclassified,9,1.14
+Taipei,taipei,living_street,12,1.142
+Taipei,taipei,pedestrian,33,6.494
+Taipei,taipei,primary,290,39.244
+Taipei,taipei,residential,703,112.357
+Taipei,taipei,secondary,240,44.549
+Taipei,taipei,tertiary,395,73.087
+Taipei,taipei,unclassified,57,12.878
+New Taipei,new-taipei,living_street,1,0.014
+New Taipei,new-taipei,pedestrian,4,0.74
+New Taipei,new-taipei,primary,44,6.888
+New Taipei,new-taipei,residential,341,67.829
+New Taipei,new-taipei,secondary,146,23.886
+New Taipei,new-taipei,tertiary,148,33.51
+New Taipei,new-taipei,unclassified,34,8.467
+Taoyuan,taoyuan,living_street,1,0.039
+Taoyuan,taoyuan,pedestrian,5,0.825
+Taoyuan,taoyuan,primary,114,17.142
+Taoyuan,taoyuan,residential,368,72.825
+Taoyuan,taoyuan,secondary,26,4.901
+Taoyuan,taoyuan,tertiary,103,26.613
+Taoyuan,taoyuan,unclassified,209,37.28
+Hsinchu,hsinchu,living_street,4,0.567
+Hsinchu,hsinchu,pedestrian,13,2.25
+Hsinchu,hsinchu,primary,37,10.28
+Hsinchu,hsinchu,residential,233,47.843
+Hsinchu,hsinchu,secondary,33,9.827
+Hsinchu,hsinchu,tertiary,197,45.332
+Hsinchu,hsinchu,unclassified,11,5.156
+Chiayi,chiayi,living_street,3,0.843
+Chiayi,chiayi,pedestrian,2,0.221
+Chiayi,chiayi,primary,53,11.607
+Chiayi,chiayi,residential,347,108.149
+Chiayi,chiayi,secondary,67,13.806
+Chiayi,chiayi,tertiary,186,54.73
+Chiayi,chiayi,unclassified,91,24.457
+Keelung,keelung,living_street,6,0.419
+Keelung,keelung,pedestrian,15,3.037
+Keelung,keelung,primary,46,10.125
+Keelung,keelung,residential,99,22.567
+Keelung,keelung,secondary,7,1.498
+Keelung,keelung,tertiary,134,23.49
+Keelung,keelung,unclassified,53,10.411
